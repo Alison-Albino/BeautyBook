@@ -12,7 +12,7 @@ export interface IStorage {
   // Clients
   getClients(): Promise<Client[]>;
   getClient(id: string): Promise<Client | undefined>;
-  getClientByCpf(cpf: string): Promise<Client | undefined>;
+  getClientByPhone(phone: string): Promise<Client | undefined>;
   createClient(client: InsertClient): Promise<Client>;
   updateClient(id: string, client: Partial<InsertClient>): Promise<Client | undefined>;
 
@@ -43,33 +43,41 @@ export class MemStorage implements IStorage {
       {
         id: randomUUID(),
         name: "Design de Sobrancelhas",
-        description: "Modelagem completa com pinça e cera",
-        price: 4500, // R$ 45.00 in cents
-        duration: 60,
-        isActive: true
-      },
-      {
-        id: randomUUID(),
-        name: "Micropigmentação",
-        description: "Técnica fio a fio para preenchimento natural",
-        price: 28000, // R$ 280.00 in cents
-        duration: 120,
-        isActive: true
-      },
-      {
-        id: randomUUID(),
-        name: "Henna",
-        description: "Coloração natural e preenchimento temporário",
-        price: 3500, // R$ 35.00 in cents
+        description: "Modelagem e design perfeito para as suas sobrancelhas",
+        price: 2500, // €25.00 in cents
         duration: 45,
         isActive: true
       },
       {
         id: randomUUID(),
-        name: "Design + Henna",
-        description: "Pacote completo: modelagem e coloração",
-        price: 6500, // R$ 65.00 in cents
+        name: "Extensão de Pestanas",
+        description: "Aplicação de extensões para pestanas mais longas e volumosas",
+        price: 4500, // €45.00 in cents
         duration: 90,
+        isActive: true
+      },
+      {
+        id: randomUUID(),
+        name: "Laminação de Sobrancelhas",
+        description: "Tratamento para sobrancelhas mais definidas e duradouras",
+        price: 3500, // €35.00 in cents
+        duration: 60,
+        isActive: true
+      },
+      {
+        id: randomUUID(),
+        name: "Lifting de Pestanas",
+        description: "Curvatura natural das pestanas com efeito duradouro",
+        price: 3000, // €30.00 in cents
+        duration: 60,
+        isActive: true
+      },
+      {
+        id: randomUUID(),
+        name: "Henna para Sobrancelhas",
+        description: "Coloração natural e definição com henna",
+        price: 2000, // €20.00 in cents
+        duration: 45,
         isActive: true
       }
     ];
@@ -90,7 +98,14 @@ export class MemStorage implements IStorage {
 
   async createService(insertService: InsertService): Promise<Service> {
     const id = randomUUID();
-    const service: Service = { ...insertService, id };
+    const service: Service = { 
+      id,
+      name: insertService.name,
+      description: insertService.description,
+      price: insertService.price,
+      duration: insertService.duration,
+      isActive: insertService.isActive
+    };
     this.services.set(id, service);
     return service;
   }
@@ -117,8 +132,8 @@ export class MemStorage implements IStorage {
     return this.clients.get(id);
   }
 
-  async getClientByCpf(cpf: string): Promise<Client | undefined> {
-    return Array.from(this.clients.values()).find(client => client.cpf === cpf);
+  async getClientByPhone(phone: string): Promise<Client | undefined> {
+    return Array.from(this.clients.values()).find(client => client.phone === phone);
   }
 
   async createClient(insertClient: InsertClient): Promise<Client> {
@@ -199,8 +214,13 @@ export class MemStorage implements IStorage {
   async createAppointment(insertAppointment: InsertAppointment): Promise<AppointmentWithDetails> {
     const id = randomUUID();
     const appointment: Appointment = { 
-      ...insertAppointment, 
       id,
+      clientId: insertAppointment.clientId,
+      serviceId: insertAppointment.serviceId,
+      date: insertAppointment.date,
+      time: insertAppointment.time,
+      status: insertAppointment.status || "agendado",
+      notes: insertAppointment.notes || null,
       createdAt: new Date()
     };
     

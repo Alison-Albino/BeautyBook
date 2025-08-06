@@ -1,10 +1,15 @@
 # Overview
 
-This is a beauty salon appointment booking system called "Bella Sobrancelhas" (Beautiful Eyebrows) built with a modern full-stack architecture. The application allows clients to book eyebrow design services online and provides an admin dashboard for managing appointments, services, and client information. The system features a multi-step booking form, real-time appointment management, and a comprehensive admin interface for business operations.
+This is a beauty salon appointment booking system called "Beatriz Sousa" built with a modern full-stack architecture. The application allows clients to book eyelash and eyebrow services online and provides an admin dashboard for managing appointments, services, and client information. The system features a simplified 3-step booking form (name and phone only), automatic WhatsApp integration for confirmations, and a comprehensive admin interface for business operations. All text is in Portuguese (Portugal).
 
 # User Preferences
 
-Preferred communication style: Simple, everyday language.
+- Preferred communication style: Simple, everyday language.
+- Language: Portuguese (Portugal)
+- Booking form: Only name and phone number required
+- WhatsApp integration: Auto-redirect after booking to +351 935397642
+- Services: Eyelashes and eyebrows only
+- Color scheme: Beige (#F3ECE3), Black (#000000), Brown (#9F766E), White (#FFFFFF), Rosy (#C8A49C)
 
 # System Architecture
 
@@ -23,8 +28,8 @@ Preferred communication style: Simple, everyday language.
 - **Middleware**: Custom logging middleware for API request monitoring and error handling
 
 ## Database Schema Design
-- **Services Table**: Stores beauty services with pricing, duration, and availability status
-- **Clients Table**: Customer information with CPF validation for Brazilian market
+- **Services Table**: Stores beauty services (eyelashes and eyebrows) with EUR pricing, duration, and availability status
+- **Clients Table**: Customer information with phone validation for Portuguese market (no CPF required)
 - **Appointments Table**: Booking records linking clients to services with scheduling details
 - **Drizzle ORM**: Type-safe database toolkit configured for PostgreSQL with schema migrations
 
@@ -43,7 +48,8 @@ Preferred communication style: Simple, everyday language.
 ## Authentication & Authorization
 - **Session-based**: Express session middleware with PostgreSQL session store
 - **Role-based Access**: Client and admin views with different permission levels
-- **Form Validation**: Client-side and server-side validation with Brazilian CPF format support
+- **Form Validation**: Client-side and server-side validation with Portuguese phone format support
+- **WhatsApp Integration**: Automatic redirection after booking with pre-filled message including service details
 
 # External Dependencies
 

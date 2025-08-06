@@ -15,8 +15,7 @@ export const services = pgTable("services", {
 export const clients = pgTable("clients", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   fullName: text("full_name").notNull(),
-  cpf: text("cpf").notNull().unique(),
-  phone: text("phone"),
+  phone: text("phone").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -33,7 +32,6 @@ export const appointments = pgTable("appointments", {
 
 export const insertServiceSchema = createInsertSchema(services).omit({
   id: true,
-  createdAt: true,
 });
 
 export const insertClientSchema = createInsertSchema(clients).omit({

@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { clientValidationSchema, formatCPF, formatPrice, formatDate, getDateString } from "@/lib/validation";
+import { clientValidationSchema, formatPhone, formatPrice, formatDate, getDateString, generateWhatsAppMessage } from "@/lib/validation";
 import { type Service, type Client } from "@shared/schema";
 import { ArrowRight, ArrowLeft, Check, Clock, Eye, Palette, Leaf, Gem } from "lucide-react";
 import { z } from "zod";
@@ -45,7 +45,6 @@ export default function BookingForm() {
     resolver: zodResolver(clientValidationSchema),
     defaultValues: {
       fullName: "",
-      cpf: "",
       phone: "",
     },
   });
@@ -73,6 +72,21 @@ export default function BookingForm() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/appointments"] });
+      
+      // Redirect to WhatsApp with message
+      if (clientData && selectedService && selectedDate && selectedTime) {
+        const message = generateWhatsAppMessage(
+          clientData.fullName,
+          selectedService.name,
+          selectedService.price,
+          getDateString(selectedDate),
+          selectedTime
+        );
+        
+        const whatsappUrl = `https://wa.me/351935397642?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }
+      
       setShowSuccessModal(true);
     },
     onError: () => {
@@ -159,9 +173,9 @@ export default function BookingForm() {
             <span className={`ml-2 text-sm font-medium ${
               currentStep >= step ? 'text-primary' : 'text-gray-600'
             }`}>
-              {step === 1 && "Seus Dados"}
+              {step === 1 && "Os Seus Dados"}
               {step === 2 && "Serviço"}
-              {step === 3 && "Data & Hora"}
+              {step === 3 && "Data e Hora"}
             </span>
             {index < 2 && <div className="w-12 h-0.5 bg-gray-300 mx-4" />}
           </div>
@@ -179,56 +193,38 @@ export default function BookingForm() {
           {/* Step 1: Personal Information */}
           {currentStep === 1 && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Informações Pessoais</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Os Seus Dados</h3>
               
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleStep1Submit)} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="fullName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome Completo</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Digite seu nome completo" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="cpf"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>CPF</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="000.000.000-00"
-                              {...field}
-                              onChange={(e) => {
-                                const formatted = formatCPF(e.target.value);
-                                field.onChange(formatted);
-                              }}
-                              maxLength={14}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome Completo</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Digite o seu nome completo" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
                   <FormField
                     control={form.control}
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Telefone (Opcional)</FormLabel>
+                        <FormLabel>Telefone</FormLabel>
                         <FormControl>
-                          <Input placeholder="(11) 99999-9999" {...field} />
+                          <Input 
+                            placeholder="+351 9XX XXX XXX"
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -246,10 +242,10 @@ export default function BookingForm() {
           {/* Step 2: Service Selection */}
           {currentStep === 2 && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Escolha seu Serviço</h3>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-6">Escolha o Seu Serviço</h3>
               
               {servicesLoading ? (
-                <div className="text-center py-8">Carregando serviços...</div>
+                <div className="text-center py-8">A carregar serviços...</div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
                   {services.map((service) => (
@@ -317,7 +313,7 @@ export default function BookingForm() {
                     {!selectedDate ? (
                       <p className="text-gray-500 text-center py-8">Selecione uma data para ver os horários disponíveis</p>
                     ) : timesLoading ? (
-                      <p className="text-gray-500 text-center py-8">Carregando horários...</p>
+                      <p className="text-gray-500 text-center py-8">A carregar horários...</p>
                     ) : availableTimes.length === 0 ? (
                       <p className="text-gray-500 text-center py-8">Nenhum horário disponível para esta data</p>
                     ) : (
@@ -371,7 +367,7 @@ export default function BookingForm() {
                   className="flex-1"
                 >
                   {createAppointmentMutation.isPending ? (
-                    "Confirmando..."
+                    "A confirmar..."
                   ) : (
                     <>
                       Confirmar Agendamento <Check className="ml-2 w-4 h-4" />
@@ -396,7 +392,7 @@ export default function BookingForm() {
                 Agendamento Confirmado!
               </DialogTitle>
               <p className="text-gray-600 mb-6">
-                Seu agendamento foi realizado com sucesso. Você receberá uma confirmação em breve.
+                O seu agendamento foi realizado com sucesso. Foi redirecionado para o WhatsApp para confirmação.
               </p>
               <Button onClick={resetForm} className="w-full">
                 Fechar

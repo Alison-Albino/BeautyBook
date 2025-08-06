@@ -21,7 +21,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const clientData = insertClientSchema.parse(req.body);
       
       // Check if client already exists
-      const existingClient = await storage.getClientByCpf(clientData.cpf);
+      const existingClient = await storage.getClientByPhone(clientData.phone);
       if (existingClient) {
         return res.json(existingClient);
       }
@@ -37,9 +37,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/clients/:cpf", async (req, res) => {
+  app.get("/api/clients/:phone", async (req, res) => {
     try {
-      const client = await storage.getClientByCpf(req.params.cpf);
+      const client = await storage.getClientByPhone(req.params.phone);
       if (!client) {
         return res.status(404).json({ message: "Cliente não encontrado" });
       }
