@@ -77,7 +77,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteService(id: string): Promise<boolean> {
     const result = await db.delete(services).where(eq(services.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Clients
@@ -204,7 +204,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAppointment(id: string): Promise<boolean> {
     const result = await db.delete(appointments).where(eq(appointments.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   // Admin

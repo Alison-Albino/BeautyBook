@@ -25,12 +25,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: services = [], isLoading: servicesLoading } = useQuery({
+  const { data: services = [], isLoading: servicesLoading } = useQuery<Service[]>({
     queryKey: ["/api/admin/services"],
     retry: false,
   });
 
-  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery({
+  const { data: appointments = [], isLoading: appointmentsLoading } = useQuery<AppointmentWithDetails[]>({
     queryKey: ["/api/admin/appointments"],
     retry: false,
   });
@@ -164,11 +164,11 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
   // Calculate stats
   const totalRevenue = appointments
-    .filter(apt => apt.status === "concluido")
-    .reduce((total, apt) => total + apt.service.price, 0);
+    .filter((apt: AppointmentWithDetails) => apt.status === "concluido")
+    .reduce((total: number, apt: AppointmentWithDetails) => total + apt.service.price, 0);
 
-  const pendingAppointments = appointments.filter(apt => apt.status === "agendado").length;
-  const totalClients = new Set(appointments.map(apt => apt.client.id)).size;
+  const pendingAppointments = appointments.filter((apt: AppointmentWithDetails) => apt.status === "agendado").length;
+  const totalClients = new Set(appointments.map((apt: AppointmentWithDetails) => apt.client.id)).size;
 
   return (
     <div className="min-h-screen bg-background">
@@ -240,7 +240,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 <Package className="h-8 w-8 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Serviços Ativos</p>
-                  <p className="text-2xl font-bold">{services.filter(s => s.isActive).length}</p>
+                  <p className="text-2xl font-bold">{services.filter((s: Service) => s.isActive).length}</p>
                 </div>
               </div>
             </CardContent>
