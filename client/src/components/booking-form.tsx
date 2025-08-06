@@ -63,8 +63,7 @@ export default function BookingForm() {
     mutationFn: async (clientData: z.infer<typeof clientValidationSchema>) => {
       return await apiRequest("/api/clients", {
         method: "POST",
-        body: JSON.stringify(clientData),
-        headers: { "Content-Type": "application/json" },
+        body: clientData,
       });
     },
   });
@@ -73,8 +72,7 @@ export default function BookingForm() {
     mutationFn: async (appointmentData: z.infer<typeof appointmentSchema>) => {
       return await apiRequest("/api/appointments", {
         method: "POST", 
-        body: JSON.stringify(appointmentData),
-        headers: { "Content-Type": "application/json" },
+        body: appointmentData,
       });
     },
     onSuccess: () => {
@@ -140,8 +138,7 @@ export default function BookingForm() {
 
     try {
       // Create or get client
-      const clientResponse = await createClientMutation.mutateAsync(clientData);
-      const client: Client = await clientResponse.json();
+      const client: Client = await createClientMutation.mutateAsync(clientData);
       
       // Create appointment
       const appointmentData = {
@@ -152,9 +149,15 @@ export default function BookingForm() {
         status: "agendado",
       };
 
-      await createAppointmentMutation.mutateAsync(appointmentData);
+      const appointment = await createAppointmentMutation.mutateAsync(appointmentData);
+      console.log("Appointment created successfully:", appointment);
     } catch (error) {
       console.error("Error creating appointment:", error);
+      toast({
+        title: "Erro no agendamento",
+        description: "Não foi possível confirmar o agendamento. Tente novamente.",
+        variant: "destructive",
+      });
     }
   };
 
