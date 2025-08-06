@@ -1,11 +1,12 @@
 import { type Service, type InsertService, type Client, type InsertClient, type Appointment, type InsertAppointment, type AppointmentWithDetails, type Admin, type InsertAdmin, type LoginRequest, services, clients, appointments, admin } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 export interface IStorage {
   // Services
   getServices(): Promise<Service[]>;
+  getAllServices(): Promise<Service[]>;
   getService(id: string): Promise<Service | undefined>;
   createService(service: InsertService): Promise<Service>;
   updateService(id: string, service: Partial<InsertService>): Promise<Service | undefined>;
@@ -54,10 +55,40 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Services
+  // Services - Cache services for better performance
+  private servicesCache: { active: Service[], all: Service[], timestamp: number } | null = null;
+  private readonly CACHE_TTL = 30000; // 30 seconds
+  
   async getServices(): Promise<Service[]> {
-    const result = await db.select().from(services).where(eq(services.isActive, true));
-    return result;
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (this.servicesCache && (now - this.servicesCache.timestamp) < this.CACHE_TTL) {
+      return this.servicesCache.active;
+    }
+    
+    // Fetch fresh data
+    const activeServices = await db.select().from(services).where(eq(services.isActive, true));
+    const allServices = await db.select().from(services);
+    
+    // Update cache
+    this.servicesCache = { active: activeServices, all: allServices, timestamp: now };
+    
+    return activeServices;
+  }
+
+  async getAllServices(): Promise<Service[]> {
+    const now = Date.now();
+    
+    // Return cached data if still valid
+    if (this.servicesCache && (now - this.servicesCache.timestamp) < this.CACHE_TTL) {
+      return this.servicesCache.all;
+    }
+    
+    // Refresh cache by calling getServices first
+    await this.getServices();
+    
+    return this.servicesCache!.all;
   }
 
   async getService(id: string): Promise<Service | undefined> {
@@ -67,16 +98,22 @@ export class DatabaseStorage implements IStorage {
 
   async createService(insertService: InsertService): Promise<Service> {
     const [service] = await db.insert(services).values(insertService).returning();
+    // Clear cache when service is created
+    this.servicesCache = null;
     return service;
   }
 
   async updateService(id: string, updateData: Partial<InsertService>): Promise<Service | undefined> {
     const [service] = await db.update(services).set(updateData).where(eq(services.id, id)).returning();
+    // Clear cache when service is updated
+    this.servicesCache = null;
     return service;
   }
 
   async deleteService(id: string): Promise<boolean> {
     const result = await db.delete(services).where(eq(services.id, id));
+    // Clear cache when service is deleted
+    this.servicesCache = null;
     return (result.rowCount ?? 0) > 0;
   }
 
@@ -117,7 +154,8 @@ export class DatabaseStorage implements IStorage {
       .from(appointments)
       .leftJoin(clients, eq(appointments.clientId, clients.id))
       .leftJoin(services, eq(appointments.serviceId, services.id))
-      .orderBy(appointments.createdAt);
+      .orderBy(desc(appointments.createdAt))
+      .limit(50); // Limit to last 50 appointments for performance
 
     return result.map(row => ({
       ...row.appointment,

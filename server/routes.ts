@@ -205,10 +205,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin services management
+  // Admin services management - Return ALL services for admin (not just active ones)
   app.get("/api/admin/services", requireAuth, async (req, res) => {
     try {
-      const services = await storage.getServices();
+      const services = await storage.getAllServices(); // Get all services including inactive
       res.json(services);
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar serviços" });
