@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
+import { pt } from "date-fns/locale";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
@@ -317,6 +318,8 @@ export default function BookingForm() {
                       onSelect={setSelectedDate}
                       disabled={(date) => date < new Date() || date.getDay() === 0} // Disable past dates and Sundays
                       className="rounded-md border w-full max-w-sm"
+                      locale={pt}
+                      weekStartsOn={1} // Monday
                     />
                   </div>
                 </div>
