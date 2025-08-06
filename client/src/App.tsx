@@ -30,9 +30,13 @@ function AdminAuth() {
     }
   }, [authStatus]);
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
     setIsAuthenticated(true);
-    queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
+    // Force a refetch to ensure we have the latest auth state
+    setTimeout(() => {
+      queryClient.refetchQueries({ queryKey: ["/api/admin/check"] });
+    }, 100);
   };
 
   const handleLogout = () => {

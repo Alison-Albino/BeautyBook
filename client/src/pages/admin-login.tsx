@@ -35,12 +35,12 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
         body: credentials,
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast({
         title: "Login realizado com sucesso",
         description: "Bem-vindo ao painel administrativo",
       });
-      onLoginSuccess();
+      await onLoginSuccess();
     },
     onError: (error) => {
       toast({

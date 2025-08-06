@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertClientSchema, insertAppointmentSchema, insertServiceSchema, loginSchema } from "@shared/schema";
@@ -6,11 +6,17 @@ import { z } from "zod";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
 
+declare module "express-session" {
+  interface SessionData {
+    adminId: string;
+  }
+}
+
 // Session configuration
 const PgStore = connectPgSimple(session);
 
 // Admin authentication middleware
-const requireAuth = (req: any, res: any, next: any) => {
+const requireAuth = (req: Request, res: any, next: any) => {
   if (!req.session?.adminId) {
     return res.status(401).json({ message: "Acesso negado" });
   }
@@ -27,10 +33,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     secret: process.env.SESSION_SECRET || 'beautysalon-secret-key',
     resave: false,
     saveUninitialized: false,
+    name: 'sessionId',
     cookie: {
       secure: false, // Set to true in production with HTTPS
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax',
     },
   }));
   // Services routes
@@ -162,11 +170,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       req.session.adminId = admin.id;
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) reject(err);
+          else resolve();
+        });
+      });
+      
       res.json({ message: "Login realizado com sucesso", admin: { id: admin.id, username: admin.username } });
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: "Dados inválidos", errors: error.errors });
       } else {
+        console.error("Login error:", error);
         res.status(500).json({ message: "Erro no login" });
       }
     }
