@@ -2,6 +2,15 @@
 
 This is a beauty salon appointment booking system called "Beatriz Sousa" built with a modern full-stack architecture. The application allows clients to book eyelash and eyebrow services online and provides an admin dashboard for managing appointments, services, and client information. The system features a simplified 3-step booking form (name and phone only), automatic WhatsApp integration for confirmations, and a comprehensive admin interface for business operations. All text is in Portuguese (Portugal).
 
+## Recent Updates (2025-08-06)
+- ✓ Integrated official logo throughout the application
+- ✓ Fixed admin login authentication system with proper session management
+- ✓ Added PostgreSQL database with complete schema
+- ✓ Created comprehensive admin dashboard with service management
+- ✓ Implemented color scheme improvements for better contrast
+- ✓ Added default admin account (admin/admin123) with bcrypt encryption
+- ✓ Working appointment booking system with WhatsApp integration
+
 # User Preferences
 
 - Preferred communication style: Simple, everyday language.
