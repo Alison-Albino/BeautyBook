@@ -39,6 +39,9 @@ export const admin = pgTable("admin", {
 
 export const insertServiceSchema = createInsertSchema(services).omit({
   id: true,
+}).extend({
+  price: z.number().min(0.01, "O preço deve ser maior que €0,01"),
+  duration: z.number().min(1, "A duração deve ser maior que 0 minutos"),
 });
 
 export const insertClientSchema = createInsertSchema(clients).omit({

@@ -154,17 +154,23 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     setSelectedService(service);
     setValue("name", service.name);
     setValue("description", service.description);
-    setValue("price", service.price);
+    setValue("price", service.price / 100); // Convert cents to euros for display
     setValue("duration", service.duration);
     setValue("isActive", service.isActive);
     setServiceDialogOpen(true);
   };
 
   const onSubmit = (data: InsertService) => {
+    // Convert price from euros to cents for storage
+    const serviceData = {
+      ...data,
+      price: Math.round(data.price * 100)
+    };
+    
     if (selectedService) {
-      updateServiceMutation.mutate({ id: selectedService.id, data });
+      updateServiceMutation.mutate({ id: selectedService.id, data: serviceData });
     } else {
-      createServiceMutation.mutate(data);
+      createServiceMutation.mutate(serviceData);
     }
   };
 
@@ -463,17 +469,20 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="price">Preço (cêntimos)</Label>
+                        <Label htmlFor="price">Preço (€)</Label>
                         <Input
                           id="price"
                           type="number"
-                          {...register("price", { valueAsNumber: true })}
-                          placeholder="2500"
+                          step="0.01"
+                          {...register("price", { 
+                            valueAsNumber: true
+                          })}
+                          placeholder="25.00"
                         />
                         {errors.price && (
                           <p className="text-sm text-destructive">{errors.price.message}</p>
                         )}
-                        <p className="text-xs text-muted-foreground">Ex: 2500 = €25,00</p>
+                        <p className="text-xs text-muted-foreground">Ex: 25.00 para €25,00</p>
                       </div>
 
                       <div className="space-y-2">
