@@ -5,7 +5,7 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="from-primary to-primary-dark py-16 bg-[#000000] text-[#ffffff]">
+      <div className="py-16 text-[#ffffff] bg-gradient-to-br from-[#9F766E] to-[#000000]">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="flex justify-center mb-6">
             <img src={logoPath} alt="Beatriz Sousa" className="h-24 w-auto filter brightness-0 invert" />

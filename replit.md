@@ -16,6 +16,9 @@ This is a beauty salon appointment booking system called "Beatriz Sousa" built w
 - ✓ Advanced revenue filtering by date (today, week, month, year, custom period)
 - ✓ Confirmation dialogs for service deletion to prevent accidental removal
 - ✓ Real-time statistics updating based on selected date filters
+- ✓ Performance optimization with database indexes and caching system
+- ✓ Portuguese date formatting (DD/MM/AAAA) throughout admin dashboard
+- ✓ Brown-to-black gradient background on booking page hero section
 
 # User Preferences
 
