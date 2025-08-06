@@ -1,5 +1,7 @@
-import { type Service, type InsertService, type Client, type InsertClient, type Appointment, type InsertAppointment, type AppointmentWithDetails } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { type Service, type InsertService, type Client, type InsertClient, type Appointment, type InsertAppointment, type AppointmentWithDetails, type Admin, type InsertAdmin, type LoginRequest, services, clients, appointments, admin } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import bcrypt from "bcrypt";
 
 export interface IStorage {
   // Services
@@ -24,174 +26,144 @@ export interface IStorage {
   createAppointment(appointment: InsertAppointment): Promise<AppointmentWithDetails>;
   updateAppointment(id: string, appointment: Partial<InsertAppointment>): Promise<AppointmentWithDetails | undefined>;
   deleteAppointment(id: string): Promise<boolean>;
+
+  // Admin
+  getAdmin(username: string): Promise<Admin | undefined>;
+  createAdmin(admin: InsertAdmin): Promise<Admin>;
+  verifyAdmin(credentials: LoginRequest): Promise<Admin | null>;
 }
 
-export class MemStorage implements IStorage {
-  private services: Map<string, Service>;
-  private clients: Map<string, Client>;
-  private appointments: Map<string, Appointment>;
-
+export class DatabaseStorage implements IStorage {
   constructor() {
-    this.services = new Map();
-    this.clients = new Map();
-    this.appointments = new Map();
-    this.initializeDefaultServices();
+    this.initializeDefaultAdmin();
   }
 
-  private initializeDefaultServices() {
-    const defaultServices: Service[] = [
-      {
-        id: randomUUID(),
-        name: "Design de Sobrancelhas",
-        description: "Modelagem e design perfeito para as suas sobrancelhas",
-        price: 2500, // €25.00 in cents
-        duration: 45,
-        isActive: true
-      },
-      {
-        id: randomUUID(),
-        name: "Extensão de Pestanas",
-        description: "Aplicação de extensões para pestanas mais longas e volumosas",
-        price: 4500, // €45.00 in cents
-        duration: 90,
-        isActive: true
-      },
-      {
-        id: randomUUID(),
-        name: "Laminação de Sobrancelhas",
-        description: "Tratamento para sobrancelhas mais definidas e duradouras",
-        price: 3500, // €35.00 in cents
-        duration: 60,
-        isActive: true
-      },
-      {
-        id: randomUUID(),
-        name: "Lifting de Pestanas",
-        description: "Curvatura natural das pestanas com efeito duradouro",
-        price: 3000, // €30.00 in cents
-        duration: 60,
-        isActive: true
-      },
-      {
-        id: randomUUID(),
-        name: "Henna para Sobrancelhas",
-        description: "Coloração natural e definição com henna",
-        price: 2000, // €20.00 in cents
-        duration: 45,
-        isActive: true
+  private async initializeDefaultAdmin() {
+    try {
+      const existingAdmin = await this.getAdmin("admin");
+      if (!existingAdmin) {
+        const hashedPassword = await bcrypt.hash("admin123", 10);
+        await this.createAdmin({
+          username: "admin",
+          password: hashedPassword,
+        });
+        console.log("Default admin created - username: admin, password: admin123");
       }
-    ];
-
-    defaultServices.forEach(service => {
-      this.services.set(service.id, service);
-    });
+    } catch (error) {
+      console.log("Admin initialization will be handled by first access");
+    }
   }
 
   // Services
   async getServices(): Promise<Service[]> {
-    return Array.from(this.services.values()).filter(service => service.isActive);
+    const result = await db.select().from(services).where(eq(services.isActive, true));
+    return result;
   }
 
   async getService(id: string): Promise<Service | undefined> {
-    return this.services.get(id);
+    const [service] = await db.select().from(services).where(eq(services.id, id));
+    return service;
   }
 
   async createService(insertService: InsertService): Promise<Service> {
-    const id = randomUUID();
-    const service: Service = { 
-      id,
-      name: insertService.name,
-      description: insertService.description,
-      price: insertService.price,
-      duration: insertService.duration,
-      isActive: insertService.isActive
-    };
-    this.services.set(id, service);
+    const [service] = await db.insert(services).values(insertService).returning();
     return service;
   }
 
   async updateService(id: string, updateData: Partial<InsertService>): Promise<Service | undefined> {
-    const service = this.services.get(id);
-    if (!service) return undefined;
-    
-    const updatedService = { ...service, ...updateData };
-    this.services.set(id, updatedService);
-    return updatedService;
+    const [service] = await db.update(services).set(updateData).where(eq(services.id, id)).returning();
+    return service;
   }
 
   async deleteService(id: string): Promise<boolean> {
-    return this.services.delete(id);
+    const result = await db.delete(services).where(eq(services.id, id));
+    return result.rowCount > 0;
   }
 
   // Clients
   async getClients(): Promise<Client[]> {
-    return Array.from(this.clients.values());
+    const result = await db.select().from(clients);
+    return result;
   }
 
   async getClient(id: string): Promise<Client | undefined> {
-    return this.clients.get(id);
+    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+    return client;
   }
 
   async getClientByPhone(phone: string): Promise<Client | undefined> {
-    return Array.from(this.clients.values()).find(client => client.phone === phone);
+    const [client] = await db.select().from(clients).where(eq(clients.phone, phone));
+    return client;
   }
 
   async createClient(insertClient: InsertClient): Promise<Client> {
-    const id = randomUUID();
-    const client: Client = { 
-      ...insertClient, 
-      id, 
-      createdAt: new Date() 
-    };
-    this.clients.set(id, client);
+    const [client] = await db.insert(clients).values(insertClient).returning();
     return client;
   }
 
   async updateClient(id: string, updateData: Partial<InsertClient>): Promise<Client | undefined> {
-    const client = this.clients.get(id);
-    if (!client) return undefined;
-    
-    const updatedClient = { ...client, ...updateData };
-    this.clients.set(id, updatedClient);
-    return updatedClient;
+    const [client] = await db.update(clients).set(updateData).where(eq(clients.id, id)).returning();
+    return client;
   }
 
   // Appointments
   async getAppointments(): Promise<AppointmentWithDetails[]> {
-    const appointments = Array.from(this.appointments.values());
-    const result: AppointmentWithDetails[] = [];
-    
-    for (const appointment of appointments) {
-      const client = this.clients.get(appointment.clientId);
-      const service = this.services.get(appointment.serviceId);
-      
-      if (client && service) {
-        result.push({ ...appointment, client, service });
-      }
-    }
-    
-    return result.sort((a, b) => {
-      const dateA = new Date(`${a.date}T${a.time}`);
-      const dateB = new Date(`${b.date}T${b.time}`);
-      return dateB.getTime() - dateA.getTime();
-    });
+    const result = await db
+      .select({
+        appointment: appointments,
+        client: clients,
+        service: services,
+      })
+      .from(appointments)
+      .leftJoin(clients, eq(appointments.clientId, clients.id))
+      .leftJoin(services, eq(appointments.serviceId, services.id))
+      .orderBy(appointments.createdAt);
+
+    return result.map(row => ({
+      ...row.appointment,
+      client: row.client!,
+      service: row.service!,
+    }));
   }
 
   async getAppointment(id: string): Promise<AppointmentWithDetails | undefined> {
-    const appointment = this.appointments.get(id);
-    if (!appointment) return undefined;
-    
-    const client = this.clients.get(appointment.clientId);
-    const service = this.services.get(appointment.serviceId);
-    
-    if (!client || !service) return undefined;
-    
-    return { ...appointment, client, service };
+    const [result] = await db
+      .select({
+        appointment: appointments,
+        client: clients,
+        service: services,
+      })
+      .from(appointments)
+      .leftJoin(clients, eq(appointments.clientId, clients.id))
+      .leftJoin(services, eq(appointments.serviceId, services.id))
+      .where(eq(appointments.id, id));
+
+    if (!result) return undefined;
+
+    return {
+      ...result.appointment,
+      client: result.client!,
+      service: result.service!,
+    };
   }
 
   async getAppointmentsByDate(date: string): Promise<AppointmentWithDetails[]> {
-    const allAppointments = await this.getAppointments();
-    return allAppointments.filter(appointment => appointment.date === date);
+    const result = await db
+      .select({
+        appointment: appointments,
+        client: clients,
+        service: services,
+      })
+      .from(appointments)
+      .leftJoin(clients, eq(appointments.clientId, clients.id))
+      .leftJoin(services, eq(appointments.serviceId, services.id))
+      .where(eq(appointments.date, date));
+
+    return result.map(row => ({
+      ...row.appointment,
+      client: row.client!,
+      service: row.service!,
+    }));
   }
 
   async getAvailableTimeSlots(date: string, serviceId: string): Promise<string[]> {
@@ -212,44 +184,49 @@ export class MemStorage implements IStorage {
   }
 
   async createAppointment(insertAppointment: InsertAppointment): Promise<AppointmentWithDetails> {
-    const id = randomUUID();
-    const appointment: Appointment = { 
-      id,
-      clientId: insertAppointment.clientId,
-      serviceId: insertAppointment.serviceId,
-      date: insertAppointment.date,
-      time: insertAppointment.time,
-      status: insertAppointment.status || "agendado",
-      notes: insertAppointment.notes || null,
-      createdAt: new Date()
-    };
+    const [appointment] = await db.insert(appointments).values(insertAppointment).returning();
     
-    this.appointments.set(id, appointment);
+    const client = await this.getClient(appointment.clientId);
+    const service = await this.getService(appointment.serviceId);
     
-    const client = this.clients.get(appointment.clientId)!;
-    const service = this.services.get(appointment.serviceId)!;
-    
-    return { ...appointment, client, service };
+    return { ...appointment, client: client!, service: service! };
   }
 
   async updateAppointment(id: string, updateData: Partial<InsertAppointment>): Promise<AppointmentWithDetails | undefined> {
-    const appointment = this.appointments.get(id);
+    const [appointment] = await db.update(appointments).set(updateData).where(eq(appointments.id, id)).returning();
     if (!appointment) return undefined;
     
-    const updatedAppointment = { ...appointment, ...updateData };
-    this.appointments.set(id, updatedAppointment);
+    const client = await this.getClient(appointment.clientId);
+    const service = await this.getService(appointment.serviceId);
     
-    const client = this.clients.get(updatedAppointment.clientId);
-    const service = this.services.get(updatedAppointment.serviceId);
-    
-    if (!client || !service) return undefined;
-    
-    return { ...updatedAppointment, client, service };
+    return { ...appointment, client: client!, service: service! };
   }
 
   async deleteAppointment(id: string): Promise<boolean> {
-    return this.appointments.delete(id);
+    const result = await db.delete(appointments).where(eq(appointments.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Admin
+  async getAdmin(username: string): Promise<Admin | undefined> {
+    const [adminUser] = await db.select().from(admin).where(eq(admin.username, username));
+    return adminUser;
+  }
+
+  async createAdmin(insertAdmin: InsertAdmin): Promise<Admin> {
+    const [adminUser] = await db.insert(admin).values(insertAdmin).returning();
+    return adminUser;
+  }
+
+  async verifyAdmin(credentials: LoginRequest): Promise<Admin | null> {
+    const adminUser = await this.getAdmin(credentials.username);
+    if (!adminUser) return null;
+
+    const isValidPassword = await bcrypt.compare(credentials.password, adminUser.password);
+    if (!isValidPassword) return null;
+
+    return adminUser;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

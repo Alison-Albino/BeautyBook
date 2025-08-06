@@ -14,6 +14,7 @@ import { clientValidationSchema, formatPhone, formatPrice, formatDate, getDateSt
 import { type Service, type Client } from "@shared/schema";
 import { ArrowRight, ArrowLeft, Check, Clock, Eye, Palette, Leaf, Gem } from "lucide-react";
 import { z } from "zod";
+import logoPath from "@assets/logo bs_1754516178309.png";
 
 type BookingStep = 1 | 2 | 3;
 

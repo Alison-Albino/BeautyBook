@@ -3,30 +3,30 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(345, 25%, 92%); /* Beige #F3ECE3 */
-  --foreground: hsl(0, 0%, 0%); /* Black #000000 */
-  --muted: hsl(345, 25%, 95%);
-  --muted-foreground: hsl(30, 15%, 60%); /* Brown #9F766E */
-  --popover: hsl(345, 25%, 92%);
-  --popover-foreground: hsl(0, 0%, 0%);
-  --card: hsl(0, 0%, 100%); /* White #FFFFFF */
-  --card-foreground: hsl(0, 0%, 0%);
-  --border: hsl(345, 25%, 85%);
-  --input: hsl(345, 25%, 90%);
-  --primary: hsl(345, 25%, 70%); /* Rosy #C8A9C */
+  --background: hsl(345, 25%, 96%); /* Lighter beige for better contrast */
+  --foreground: hsl(0, 0%, 8%); /* Darker text for better readability */
+  --muted: hsl(345, 25%, 92%);
+  --muted-foreground: hsl(30, 15%, 35%); /* Darker brown for better contrast */
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(0, 0%, 8%);
+  --card: hsl(0, 0%, 100%); /* White cards */
+  --card-foreground: hsl(0, 0%, 8%);
+  --border: hsl(345, 25%, 75%); /* Darker border for better visibility */
+  --input: hsl(0, 0%, 100%);
+  --primary: hsl(30, 15%, 45%); /* Darker brown primary for better contrast */
   --primary-foreground: hsl(0, 0%, 100%);
-  --primary-light: hsl(345, 25%, 85%);
-  --primary-dark: hsl(30, 15%, 50%); /* Brown */
-  --secondary: hsl(345, 25%, 95%);
-  --secondary-foreground: hsl(0, 0%, 0%);
-  --accent: hsl(345, 25%, 92%);
-  --accent-foreground: hsl(0, 0%, 0%);
-  --destructive: hsl(0, 84.2%, 60.2%);
-  --destructive-foreground: hsl(60, 9.1%, 97.8%);
-  --ring: hsl(0, 0%, 0%);
-  --beige: hsl(345, 25%, 92%);
-  --brown: hsl(30, 15%, 60%);
-  --rosy: hsl(345, 25%, 70%);
+  --primary-light: hsl(345, 25%, 80%);
+  --primary-dark: hsl(30, 15%, 35%); /* Even darker brown */
+  --secondary: hsl(345, 25%, 60%); /* Darker rosy secondary */
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(345, 25%, 65%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 84.2%, 50%); /* Darker red for better contrast */
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --ring: hsl(30, 15%, 45%);
+  --beige: hsl(345, 25%, 96%);
+  --brown: hsl(30, 15%, 45%);
+  --rosy: hsl(345, 25%, 60%);
   --radius: 0.5rem;
 }
 

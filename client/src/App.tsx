@@ -7,19 +7,67 @@ import { Button } from "@/components/ui/button";
 import { Scissors, Settings, User } from "lucide-react";
 import BookingPage from "@/pages/booking";
 import AdminPage from "@/pages/admin";
+import AdminLogin from "@/pages/admin-login";
+import AdminDashboard from "@/pages/admin-dashboard";
 import NotFound from "@/pages/not-found";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import logoPath from "@assets/logo bs_1754516178309.png";
+
+function AdminAuth() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const { data: authStatus } = useQuery({
+    queryKey: ["/api/admin/check"],
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (authStatus !== undefined) {
+      setIsAuthenticated(authStatus.authenticated);
+      setIsLoading(false);
+    }
+  }, [authStatus]);
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <img src={logoPath} alt="Beatriz Sousa" className="h-20 w-auto mx-auto mb-4" />
+          <p className="text-muted-foreground">A carregar...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  return <AdminDashboard onLogout={handleLogout} />;
+}
 
 function Navigation() {
   const [currentView, setCurrentView] = useState<'client' | 'admin'>('client');
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-card shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-3">
-            <Scissors className="text-primary text-2xl" />
-            <h1 className="text-xl font-semibold text-gray-900">Beatriz Sousa</h1>
+            <img src={logoPath} alt="Beatriz Sousa" className="h-10 w-auto" />
+            <h1 className="text-xl font-semibold text-foreground">Beatriz Sousa</h1>
           </div>
           <div className="flex space-x-4">
             <Button
@@ -55,7 +103,11 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={BookingPage} />
-      <Route path="/admin" component={AdminPage} />
+      <Route path="/admin" component={() => (
+        <QueryClientProvider client={queryClient}>
+          <AdminAuth />
+        </QueryClientProvider>
+      )} />
       <Route component={NotFound} />
     </Switch>
   );

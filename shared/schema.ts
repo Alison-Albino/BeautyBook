@@ -30,6 +30,13 @@ export const appointments = pgTable("appointments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const admin = pgTable("admin", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(), // hashed password
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertServiceSchema = createInsertSchema(services).omit({
   id: true,
 });
@@ -44,12 +51,25 @@ export const insertAppointmentSchema = createInsertSchema(appointments).omit({
   createdAt: true,
 });
 
+export const insertAdminSchema = createInsertSchema(admin).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const loginSchema = z.object({
+  username: z.string().min(3, "Nome de utilizador deve ter pelo menos 3 caracteres"),
+  password: z.string().min(6, "Palavra-passe deve ter pelo menos 6 caracteres"),
+});
+
 export type Service = typeof services.$inferSelect;
 export type InsertService = z.infer<typeof insertServiceSchema>;
 export type Client = typeof clients.$inferSelect;
 export type InsertClient = z.infer<typeof insertClientSchema>;
 export type Appointment = typeof appointments.$inferSelect;
 export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
+export type Admin = typeof admin.$inferSelect;
+export type InsertAdmin = z.infer<typeof insertAdminSchema>;
+export type LoginRequest = z.infer<typeof loginSchema>;
 
 // Extended types for API responses
 export type AppointmentWithDetails = Appointment & {
