@@ -25,13 +25,13 @@ function AdminAuth() {
 
   useEffect(() => {
     if (authStatus !== undefined) {
-      setIsAuthenticated(authStatus.authenticated);
+      setIsAuthenticated(authStatus?.authenticated || false);
       setIsLoading(false);
     }
   }, [authStatus]);
 
-  const handleLoginSuccess = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
+  const handleLoginSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/check"] });
     setIsAuthenticated(true);
     // Force a refetch to ensure we have the latest auth state
     setTimeout(() => {
