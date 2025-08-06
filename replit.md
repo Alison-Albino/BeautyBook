@@ -12,6 +12,10 @@ This is a beauty salon appointment booking system called "Beatriz Sousa" built w
 - ✓ Working appointment booking system with WhatsApp integration
 - ✓ TypeScript errors resolved and application ready for deployment
 - ✓ Session management optimized with secure cookies and proper invalidation
+- ✓ Complete CRUD system for services (Create, Read, Update, Delete)
+- ✓ Advanced revenue filtering by date (today, week, month, year, custom period)
+- ✓ Confirmation dialogs for service deletion to prevent accidental removal
+- ✓ Real-time statistics updating based on selected date filters
 
 # User Preferences
 

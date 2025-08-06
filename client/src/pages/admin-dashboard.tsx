@@ -11,8 +11,9 @@ import { apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertServiceSchema, type Service, type InsertService, type AppointmentWithDetails } from "@shared/schema";
-import { Plus, Edit2, Trash2, LogOut, Calendar, Users, DollarSign, Package } from "lucide-react";
+import { Plus, Edit2, Trash2, LogOut, Calendar, Users, DollarSign, Package, Filter } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import logoPath from "@assets/logo bs_1754516178309.png";
 
 interface AdminDashboardProps {
@@ -22,6 +23,9 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
+  const [dateFilter, setDateFilter] = useState<string>("all");
+  const [customDateFrom, setCustomDateFrom] = useState<string>("");
+  const [customDateTo, setCustomDateTo] = useState<string>("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -140,6 +144,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     },
   });
 
+  const handleDeleteService = (service: Service) => {
+    if (window.confirm(`Tem certeza que deseja eliminar o serviço "${service.name}"? Esta ação não pode ser desfeita.`)) {
+      deleteServiceMutation.mutate(service.id);
+    }
+  };
+
   const handleEditService = (service: Service) => {
     setSelectedService(service);
     setValue("name", service.name);
@@ -162,13 +172,53 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     return `€${(price / 100).toFixed(2)}`;
   };
 
+  // Filter appointments by date
+  const getFilteredAppointments = () => {
+    if (dateFilter === "all") return appointments;
+    
+    const now = new Date();
+    let startDate: Date;
+    let endDate: Date = new Date();
+    
+    switch (dateFilter) {
+      case "today":
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+        break;
+      case "week":
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "month":
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        break;
+      case "year":
+        startDate = new Date(now.getFullYear(), 0, 1);
+        break;
+      case "custom":
+        if (!customDateFrom || !customDateTo) return appointments;
+        startDate = new Date(customDateFrom);
+        endDate = new Date(customDateTo);
+        endDate.setHours(23, 59, 59);
+        break;
+      default:
+        return appointments;
+    }
+    
+    return appointments.filter((apt: AppointmentWithDetails) => {
+      const aptDate = new Date(apt.date);
+      return aptDate >= startDate && aptDate <= endDate;
+    });
+  };
+
+  const filteredAppointments = getFilteredAppointments();
+
   // Calculate stats
-  const totalRevenue = appointments
+  const totalRevenue = filteredAppointments
     .filter((apt: AppointmentWithDetails) => apt.status === "concluido")
     .reduce((total: number, apt: AppointmentWithDetails) => total + apt.service.price, 0);
 
-  const pendingAppointments = appointments.filter((apt: AppointmentWithDetails) => apt.status === "agendado").length;
-  const totalClients = new Set(appointments.map((apt: AppointmentWithDetails) => apt.client.id)).size;
+  const pendingAppointments = filteredAppointments.filter((apt: AppointmentWithDetails) => apt.status === "agendado").length;
+  const totalClients = new Set(filteredAppointments.map((apt: AppointmentWithDetails) => apt.client.id)).size;
 
   return (
     <div className="min-h-screen bg-background">
@@ -196,6 +246,55 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
       </div>
 
       <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Revenue Filter */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Filter className="h-5 w-5" />
+                  Filtro de Faturamento
+                </CardTitle>
+                <CardDescription>Selecione o período para ver as estatísticas</CardDescription>
+              </div>
+              <div className="flex items-center gap-4 flex-wrap">
+                <Select value={dateFilter} onValueChange={setDateFilter}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Período" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem>
+                    <SelectItem value="today">Hoje</SelectItem>
+                    <SelectItem value="week">Última Semana</SelectItem>
+                    <SelectItem value="month">Este Mês</SelectItem>
+                    <SelectItem value="year">Este Ano</SelectItem>
+                    <SelectItem value="custom">Período Personalizado</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                {dateFilter === "custom" && (
+                  <>
+                    <Input
+                      type="date"
+                      value={customDateFrom}
+                      onChange={(e) => setCustomDateFrom(e.target.value)}
+                      className="w-40"
+                      placeholder="Data inicial"
+                    />
+                    <Input
+                      type="date"
+                      value={customDateTo}
+                      onChange={(e) => setCustomDateTo(e.target.value)}
+                      className="w-40"
+                      placeholder="Data final"
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
@@ -395,7 +494,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => deleteServiceMutation.mutate(service.id)}
+                        onClick={() => handleDeleteService(service)}
                         disabled={deleteServiceMutation.isPending}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -411,8 +510,18 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         {/* Recent Appointments */}
         <Card>
           <CardHeader>
-            <CardTitle>Agendamentos Recentes</CardTitle>
-            <CardDescription>Últimos agendamentos realizados</CardDescription>
+            <CardTitle>Agendamentos 
+              {dateFilter === "all" ? "Recentes" : 
+               dateFilter === "today" ? "de Hoje" :
+               dateFilter === "week" ? "da Semana" :
+               dateFilter === "month" ? "do Mês" :
+               dateFilter === "year" ? "do Ano" :
+               "do Período"}
+            </CardTitle>
+            <CardDescription>
+              {dateFilter === "all" ? "Últimos agendamentos realizados" : 
+               `Agendamentos filtrados por ${dateFilter === "custom" ? "período personalizado" : "período selecionado"}`}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {appointmentsLoading ? (
@@ -421,7 +530,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               <p className="text-center py-8 text-muted-foreground">Nenhum agendamento encontrado</p>
             ) : (
               <div className="space-y-4">
-                {appointments.slice(0, 10).map((appointment: AppointmentWithDetails) => (
+                {filteredAppointments.slice(0, 10).map((appointment: AppointmentWithDetails) => (
                   <div
                     key={appointment.id}
                     className="flex items-center justify-between p-4 border rounded-lg"
