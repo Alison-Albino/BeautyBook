@@ -174,8 +174,22 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     }
   };
 
+  // Helper functions for formatting
   const formatPrice = (price: number) => {
     return `€${(price / 100).toFixed(2)}`;
+  };
+
+  const formatDate = (dateString: string): string => {
+    try {
+      const date = new Date(dateString + 'T00:00:00');
+      return date.toLocaleDateString('pt-PT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
   };
 
   // Filter appointments by date
@@ -384,7 +398,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       <h4 className="font-semibold">{appointment.client.fullName}</h4>
                       <p className="text-sm text-muted-foreground">{appointment.service.name}</p>
                       <p className="text-sm text-muted-foreground">
-                        {appointment.date} às {appointment.time}
+                        {formatDate(appointment.date)} às {appointment.time}
                       </p>
                     </div>
                     <div className="text-right">

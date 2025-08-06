@@ -25,7 +25,30 @@ export const formatPrice = (priceInCents: number): string => {
 };
 
 export const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('pt-PT');
+  try {
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('pt-PT', {
+      day: '2-digit',
+      month: '2-digit', 
+      year: 'numeric'
+    });
+  } catch {
+    return dateString;
+  }
+};
+
+export const formatDateLong = (dateString: string): string => {
+  try {
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('pt-PT', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  } catch {
+    return dateString;
+  }
 };
 
 export const getDateString = (date: Date): string => {
