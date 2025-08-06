@@ -25,7 +25,7 @@ function AdminAuth() {
 
   useEffect(() => {
     if (authStatus !== undefined) {
-      setIsAuthenticated(authStatus?.authenticated || false);
+      setIsAuthenticated((authStatus as any)?.authenticated || false);
       setIsLoading(false);
     }
   }, [authStatus]);
@@ -68,22 +68,23 @@ function Navigation() {
   return (
     <nav className="bg-card shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-16 py-4 sm:py-0">
+          <div className="flex items-center space-x-3 mb-4 sm:mb-0">
             <img src={logoPath} alt="Beatriz Sousa" className="h-10 w-auto" />
-            <h1 className="text-xl font-semibold text-foreground">Beatriz Sousa</h1>
+            <h1 className="text-lg sm:text-xl font-semibold text-foreground">Beatriz Sousa</h1>
           </div>
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
             <Button
               variant={currentView === 'client' ? 'default' : 'outline'}
               onClick={() => {
                 setCurrentView('client');
                 window.location.href = '/';
               }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto justify-center"
+              size="sm"
             >
               <User className="w-4 h-4" />
-              Área do Cliente
+              <span className="text-sm">Área do Cliente</span>
             </Button>
             <Button
               variant={currentView === 'admin' ? 'default' : 'outline'}
@@ -91,10 +92,11 @@ function Navigation() {
                 setCurrentView('admin');
                 window.location.href = '/admin';
               }}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full sm:w-auto justify-center"
+              size="sm"
             >
               <Settings className="w-4 h-4" />
-              Painel Admin
+              <span className="text-sm">Painel Admin</span>
             </Button>
           </div>
         </div>
