@@ -346,6 +346,64 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           </Card>
         </div>
 
+        {/* Recent Appointments */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Agendamentos 
+              {dateFilter === "all" ? "Recentes" : 
+               dateFilter === "today" ? "de Hoje" :
+               dateFilter === "week" ? "da Semana" :
+               dateFilter === "month" ? "do Mês" :
+               dateFilter === "year" ? "do Ano" :
+               "do Período"}
+            </CardTitle>
+            <CardDescription>
+              {dateFilter === "all" ? "Últimos agendamentos realizados" : 
+               `Agendamentos filtrados por ${dateFilter === "custom" ? "período personalizado" : "período selecionado"}`}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {appointmentsLoading ? (
+              <p className="text-center py-8 text-muted-foreground">A carregar agendamentos...</p>
+            ) : appointments.length === 0 ? (
+              <p className="text-center py-8 text-muted-foreground">Nenhum agendamento encontrado</p>
+            ) : (
+              <div className="space-y-4">
+                {filteredAppointments.slice(0, 10).map((appointment: AppointmentWithDetails) => (
+                  <div
+                    key={appointment.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
+                    <div>
+                      <h4 className="font-semibold">{appointment.client.fullName}</h4>
+                      <p className="text-sm text-muted-foreground">{appointment.service.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {appointment.date} às {appointment.time}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <Badge
+                        variant={
+                          appointment.status === "concluido"
+                            ? "default"
+                            : appointment.status === "agendado"
+                            ? "secondary"
+                            : "outline"
+                        }
+                      >
+                        {appointment.status}
+                      </Badge>
+                      <p className="text-sm font-medium mt-1">
+                        {formatPrice(appointment.service.price)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Services Management */}
         <Card>
           <CardHeader>
@@ -499,64 +557,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent Appointments */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Agendamentos 
-              {dateFilter === "all" ? "Recentes" : 
-               dateFilter === "today" ? "de Hoje" :
-               dateFilter === "week" ? "da Semana" :
-               dateFilter === "month" ? "do Mês" :
-               dateFilter === "year" ? "do Ano" :
-               "do Período"}
-            </CardTitle>
-            <CardDescription>
-              {dateFilter === "all" ? "Últimos agendamentos realizados" : 
-               `Agendamentos filtrados por ${dateFilter === "custom" ? "período personalizado" : "período selecionado"}`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {appointmentsLoading ? (
-              <p className="text-center py-8 text-muted-foreground">A carregar agendamentos...</p>
-            ) : appointments.length === 0 ? (
-              <p className="text-center py-8 text-muted-foreground">Nenhum agendamento encontrado</p>
-            ) : (
-              <div className="space-y-4">
-                {filteredAppointments.slice(0, 10).map((appointment: AppointmentWithDetails) => (
-                  <div
-                    key={appointment.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div>
-                      <h4 className="font-semibold">{appointment.client.fullName}</h4>
-                      <p className="text-sm text-muted-foreground">{appointment.service.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {appointment.date} às {appointment.time}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <Badge
-                        variant={
-                          appointment.status === "concluido"
-                            ? "default"
-                            : appointment.status === "agendado"
-                            ? "secondary"
-                            : "outline"
-                        }
-                      >
-                        {appointment.status}
-                      </Badge>
-                      <p className="text-sm font-medium mt-1">
-                        {formatPrice(appointment.service.price)}
-                      </p>
                     </div>
                   </div>
                 ))}
