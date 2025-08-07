@@ -290,7 +290,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               <img src={logoPath} alt="Beatriz Sousa" className="h-12 w-auto" />
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
-                <p className="text-sm text-muted-foreground">Gestão do Salão Beatriz Sousa</p>
+                <p className="text-sm text-muted-foreground">Beatriz Sousa</p>
               </div>
             </div>
             <Button
