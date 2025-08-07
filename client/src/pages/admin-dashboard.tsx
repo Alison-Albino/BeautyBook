@@ -23,7 +23,7 @@ interface AdminDashboardProps {
 export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [serviceDialogOpen, setServiceDialogOpen] = useState(false);
-  const [dateFilter, setDateFilter] = useState<string>("all");
+  const [dateFilter, setDateFilter] = useState<string>("week");
   const [customDateFrom, setCustomDateFrom] = useState<string>("");
   const [customDateTo, setCustomDateTo] = useState<string>("");
   const { toast } = useToast();
@@ -164,6 +164,26 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     },
   });
 
+  const cancelAppointmentMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest(`/api/admin/appointments/${id}/cancel`, { method: "PATCH" });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/appointments"] });
+      toast({
+        title: "Agendamento cancelado",
+        description: "O horário foi liberado e está novamente disponível",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Erro ao cancelar agendamento",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDeleteService = (service: Service) => {
     if (window.confirm(`Tem certeza que deseja eliminar o serviço "${service.name}"? Esta ação não pode ser desfeita.`)) {
       deleteServiceMutation.mutate(service.id);
@@ -292,9 +312,9 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Filter className="h-5 w-5" />
-                  Filtro de Faturamento
+                  Filtrar Agendamentos e Estatísticas
                 </CardTitle>
-                <CardDescription>Selecione o período para ver as estatísticas</CardDescription>
+                <CardDescription>Filtre os agendamentos e estatísticas por período (padrão: esta semana)</CardDescription>
               </div>
               <div className="flex items-center gap-4 flex-wrap">
                 <Select value={dateFilter} onValueChange={setDateFilter}>
@@ -302,12 +322,12 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                     <SelectValue placeholder="Período" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
                     <SelectItem value="today">Hoje</SelectItem>
-                    <SelectItem value="week">Última Semana</SelectItem>
-                    <SelectItem value="month">Este Mês</SelectItem>
-                    <SelectItem value="year">Este Ano</SelectItem>
-                    <SelectItem value="custom">Período Personalizado</SelectItem>
+                    <SelectItem value="week">Esta semana</SelectItem>
+                    <SelectItem value="month">Este mês</SelectItem>
+                    <SelectItem value="year">Este ano</SelectItem>
+                    <SelectItem value="all">Todos os registos</SelectItem>
+                    <SelectItem value="custom">Período personalizado</SelectItem>
                   </SelectContent>
                 </Select>
                 
@@ -389,16 +409,20 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         <Card>
           <CardHeader>
             <CardTitle>Agendamentos 
-              {dateFilter === "all" ? "Recentes" : 
-               dateFilter === "today" ? "de Hoje" :
-               dateFilter === "week" ? "da Semana" :
-               dateFilter === "month" ? "do Mês" :
-               dateFilter === "year" ? "do Ano" :
-               "do Período"}
+              {dateFilter === "today" ? "de Hoje" :
+               dateFilter === "week" ? "desta Semana" :
+               dateFilter === "month" ? "deste Mês" :
+               dateFilter === "year" ? "deste Ano" :
+               dateFilter === "all" ? "Recentes" :
+               "do Período Personalizado"}
             </CardTitle>
             <CardDescription>
-              {dateFilter === "all" ? "Últimos agendamentos realizados" : 
-               `Agendamentos filtrados por ${dateFilter === "custom" ? "período personalizado" : "período selecionado"}`}
+              {dateFilter === "all" ? "Últimos 50 agendamentos realizados" : 
+               `Agendamentos filtrados - ${dateFilter === "custom" ? "período personalizado" : 
+                dateFilter === "today" ? "apenas hoje" :
+                dateFilter === "week" ? "últimos 7 dias" :
+                dateFilter === "month" ? "últimos 30 dias" :
+                "último ano"}`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -434,14 +458,29 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                           {appointment.status}
                         </Badge>
                         {appointment.status === "agendado" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => completeAppointmentMutation.mutate(appointment.id)}
-                            disabled={completeAppointmentMutation.isPending}
-                          >
-                            Finalizar
-                          </Button>
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => completeAppointmentMutation.mutate(appointment.id)}
+                              disabled={completeAppointmentMutation.isPending || cancelAppointmentMutation.isPending}
+                            >
+                              Finalizar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                if (window.confirm("Tem certeza que deseja cancelar este agendamento? O horário ficará disponível novamente.")) {
+                                  cancelAppointmentMutation.mutate(appointment.id);
+                                }
+                              }}
+                              disabled={completeAppointmentMutation.isPending || cancelAppointmentMutation.isPending}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              Cancelar
+                            </Button>
+                          </>
                         )}
                       </div>
                       <p className="text-sm font-medium">

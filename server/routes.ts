@@ -286,6 +286,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Cancel appointment
+  app.patch("/api/admin/appointments/:id/cancel", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const appointment = await storage.updateAppointment(id, { status: "cancelado" });
+      
+      if (appointment) {
+        res.json({ message: "Agendamento cancelado com sucesso", appointment });
+      } else {
+        res.status(404).json({ message: "Agendamento não encontrado" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao cancelar agendamento" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
