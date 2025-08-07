@@ -439,6 +439,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   >
                     <div>
                       <h4 className="font-semibold">{appointment.client.fullName}</h4>
+                      <p className="text-sm text-muted-foreground">{appointment.client.phone}</p>
                       <p className="text-sm text-muted-foreground">{appointment.service.name}</p>
                       <p className="text-sm text-muted-foreground">
                         {formatDate(appointment.date)} às {appointment.time}
