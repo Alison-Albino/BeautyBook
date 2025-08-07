@@ -435,18 +435,18 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 {filteredAppointments.slice(0, 10).map((appointment: AppointmentWithDetails) => (
                   <div
                     key={appointment.id}
-                    className="flex items-center justify-between p-4 border rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border rounded-lg gap-4"
                   >
-                    <div>
-                      <h4 className="font-semibold">{appointment.client.fullName}</h4>
-                      <p className="text-sm text-muted-foreground">{appointment.client.phone}</p>
-                      <p className="text-sm text-muted-foreground">{appointment.service.name}</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold truncate">{appointment.client.fullName}</h4>
+                      <p className="text-sm text-muted-foreground truncate">{appointment.client.phone}</p>
+                      <p className="text-sm text-muted-foreground truncate">{appointment.service.name}</p>
                       <p className="text-sm text-muted-foreground">
                         {formatDate(appointment.date)} às {appointment.time}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-2 justify-end mb-2">
+                    <div className="flex flex-col sm:items-end gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <Badge
                           variant={
                             appointment.status === "concluido"
@@ -458,35 +458,36 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                         >
                           {appointment.status}
                         </Badge>
-                        {appointment.status === "agendado" && (
-                          <>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => completeAppointmentMutation.mutate(appointment.id)}
-                              disabled={completeAppointmentMutation.isPending || cancelAppointmentMutation.isPending}
-                            >
-                              Finalizar
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                if (window.confirm("Tem certeza que deseja cancelar este agendamento? O horário ficará disponível novamente.")) {
-                                  cancelAppointmentMutation.mutate(appointment.id);
-                                }
-                              }}
-                              disabled={completeAppointmentMutation.isPending || cancelAppointmentMutation.isPending}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              Cancelar
-                            </Button>
-                          </>
-                        )}
+                        <p className="text-sm font-medium">
+                          {formatPrice(appointment.service.price)}
+                        </p>
                       </div>
-                      <p className="text-sm font-medium">
-                        {formatPrice(appointment.service.price)}
-                      </p>
+                      {appointment.status === "agendado" && (
+                        <div className="flex gap-2 w-full sm:w-auto">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => completeAppointmentMutation.mutate(appointment.id)}
+                            disabled={completeAppointmentMutation.isPending || cancelAppointmentMutation.isPending}
+                            className="flex-1 sm:flex-none"
+                          >
+                            Finalizar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              if (window.confirm("Tem certeza que deseja cancelar este agendamento? O horário ficará disponível novamente.")) {
+                                cancelAppointmentMutation.mutate(appointment.id);
+                              }
+                            }}
+                            disabled={completeAppointmentMutation.isPending || cancelAppointmentMutation.isPending}
+                            className="text-red-600 hover:text-red-700 flex-1 sm:flex-none"
+                          >
+                            Cancelar
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
