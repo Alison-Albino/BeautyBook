@@ -264,7 +264,6 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
           </div>
         </div>
       </div>
-
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Revenue Filter */}
         <Card>
@@ -334,7 +333,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               <div className="flex items-center space-x-2">
                 <Calendar className="h-8 w-8 text-primary" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Agendamentos Pendentes</p>
+                  <p className="text-sm text-muted-foreground">Agendamentos</p>
                   <p className="text-2xl font-bold">{pendingAppointments}</p>
                 </div>
               </div>
