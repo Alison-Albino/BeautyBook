@@ -144,6 +144,26 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     },
   });
 
+  const completeAppointmentMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest(`/api/admin/appointments/${id}/complete`, { method: "PATCH" });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/appointments"] });
+      toast({
+        title: "Sucesso",
+        description: "Agendamento finalizado com sucesso",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Erro ao finalizar agendamento",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleDeleteService = (service: Service) => {
     if (window.confirm(`Tem certeza que deseja eliminar o serviço "${service.name}"? Esta ação não pode ser desfeita.`)) {
       deleteServiceMutation.mutate(service.id);
@@ -401,18 +421,30 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                       </p>
                     </div>
                     <div className="text-right">
-                      <Badge
-                        variant={
-                          appointment.status === "concluido"
-                            ? "default"
-                            : appointment.status === "agendado"
-                            ? "secondary"
-                            : "outline"
-                        }
-                      >
-                        {appointment.status}
-                      </Badge>
-                      <p className="text-sm font-medium mt-1">
+                      <div className="flex items-center gap-2 justify-end mb-2">
+                        <Badge
+                          variant={
+                            appointment.status === "concluido"
+                              ? "default"
+                              : appointment.status === "agendado"
+                              ? "secondary"
+                              : "outline"
+                          }
+                        >
+                          {appointment.status}
+                        </Badge>
+                        {appointment.status === "agendado" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => completeAppointmentMutation.mutate(appointment.id)}
+                            disabled={completeAppointmentMutation.isPending}
+                          >
+                            Finalizar
+                          </Button>
+                        )}
+                      </div>
+                      <p className="text-sm font-medium">
                         {formatPrice(appointment.service.price)}
                       </p>
                     </div>

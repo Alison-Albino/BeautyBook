@@ -215,7 +215,7 @@ export class DatabaseStorage implements IStorage {
 
     const existingAppointments = await this.getAppointmentsByDate(date);
     const bookedTimes = existingAppointments
-      .filter(apt => apt.status !== "cancelado")
+      .filter(apt => apt.status === "agendado" || apt.status === "concluido")
       .map(apt => apt.time);
 
     return allTimeSlots.filter(time => !bookedTimes.includes(time));

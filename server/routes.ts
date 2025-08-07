@@ -270,6 +270,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Complete appointment
+  app.patch("/api/admin/appointments/:id/complete", requireAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const appointment = await storage.updateAppointment(id, { status: "concluido" });
+      
+      if (appointment) {
+        res.json({ message: "Agendamento finalizado com sucesso", appointment });
+      } else {
+        res.status(404).json({ message: "Agendamento não encontrado" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao finalizar agendamento" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
