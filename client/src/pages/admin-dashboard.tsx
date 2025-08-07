@@ -312,7 +312,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <Filter className="h-5 w-5" />
-                  Filtrar Agendamentos e Estatísticas
+                  Filtros
                 </CardTitle>
                 <CardDescription>Filtre os agendamentos e estatísticas</CardDescription>
               </div>
