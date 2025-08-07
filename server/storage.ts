@@ -111,10 +111,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteService(id: string): Promise<boolean> {
-    const result = await db.delete(services).where(eq(services.id, id));
-    // Clear cache when service is deleted
-    this.servicesCache = null;
-    return (result.rowCount ?? 0) > 0;
+    try {
+      // Check if service has any appointments
+      const serviceAppointments = await db.select().from(appointments).where(eq(appointments.serviceId, id));
+      
+      if (serviceAppointments.length > 0) {
+        throw new Error("Não é possível eliminar um serviço que possui agendamentos");
+      }
+      
+      const result = await db.delete(services).where(eq(services.id, id));
+      // Clear cache when service is deleted
+      this.servicesCache = null;
+      return (result.rowCount ?? 0) > 0;
+    } catch (error) {
+      console.error("Error deleting service:", error);
+      throw error;
+    }
   }
 
   // Clients

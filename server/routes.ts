@@ -256,7 +256,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ message: "Serviço eliminado com sucesso" });
     } catch (error) {
-      res.status(500).json({ message: "Erro ao eliminar serviço" });
+      console.error("Delete service error:", error);
+      if (error instanceof Error && error.message.includes("agendamentos")) {
+        res.status(400).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Erro ao eliminar serviço" });
+      }
     }
   });
 
