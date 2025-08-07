@@ -10,7 +10,7 @@ export default function BookingPage() {
           <div className="flex justify-center mb-6">
             <img src={logoPath} alt="Beatriz Sousa" className="h-24 w-auto filter brightness-0 invert" />
           </div>
-          <h2 className="text-4xl font-bold mb-4">Agende o Seu Tratamento</h2>
+          <h2 className="text-4xl font-bold mb-4">Agende seu horário conosco</h2>
           <p className="text-xl opacity-90">Transforme o seu olhar com os nossos serviços especializados em pestanas e sobrancelhas</p>
         </div>
       </div>
