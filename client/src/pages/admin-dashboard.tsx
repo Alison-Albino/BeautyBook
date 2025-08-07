@@ -408,14 +408,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
         {/* Recent Appointments */}
         <Card>
           <CardHeader>
-            <CardTitle>Agendamentos 
-              {dateFilter === "today" ? "de Hoje" :
-               dateFilter === "week" ? "desta Semana" :
-               dateFilter === "month" ? "deste Mês" :
-               dateFilter === "year" ? "deste Ano" :
-               dateFilter === "all" ? "Recentes" :
-               "do Período Personalizado"}
-            </CardTitle>
+            <CardTitle>Agendamentos</CardTitle>
             <CardDescription>
               {dateFilter === "all" ? "Últimos 50 agendamentos realizados" : 
                `Agendamentos filtrados - ${dateFilter === "custom" ? "período personalizado" : 
