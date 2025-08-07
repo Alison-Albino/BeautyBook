@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 export const phoneValidation = z.string()
-  .min(9, "Telefone deve ter pelo menos 9 dígitos")
-  .regex(/^[0-9+\s()-]+$/, "Formato de telefone inválido");
+  .min(13, "Telefone deve ter formato completo: +351 9XX XXX XXX")
+  .max(17, "Telefone muito longo")
+  .regex(/^\+351\s9\d{2}\s\d{3}\s\d{3}$/, "Formato inválido. Use: +351 9XX XXX XXX");
 
 export const clientValidationSchema = z.object({
   fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -10,9 +11,29 @@ export const clientValidationSchema = z.object({
 });
 
 export const formatPhone = (value: string): string => {
+  // Extract only digits from the input
   const numbers = value.replace(/\D/g, '');
-  if (numbers.length <= 9) {
-    return numbers.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+  
+  // If starts with 351, remove it (country code will be prefixed)
+  const cleanNumbers = numbers.startsWith('351') ? numbers.slice(3) : numbers;
+  
+  // Format as 9XX XXX XXX
+  if (cleanNumbers.length <= 9) {
+    let formatted = cleanNumbers;
+    if (cleanNumbers.length >= 3) {
+      formatted = cleanNumbers.slice(0, 3);
+      if (cleanNumbers.length >= 6) {
+        formatted += ' ' + cleanNumbers.slice(3, 6);
+        if (cleanNumbers.length >= 9) {
+          formatted += ' ' + cleanNumbers.slice(6, 9);
+        } else if (cleanNumbers.length > 6) {
+          formatted += ' ' + cleanNumbers.slice(6);
+        }
+      } else if (cleanNumbers.length > 3) {
+        formatted += ' ' + cleanNumbers.slice(3);
+      }
+    }
+    return '+351 ' + formatted;
   }
   return value;
 };

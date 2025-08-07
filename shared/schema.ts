@@ -44,7 +44,13 @@ export const insertServiceSchema = createInsertSchema(services).omit({
   duration: z.number().min(1, "A duração deve ser maior que 0 minutos"),
 });
 
-export const insertClientSchema = createInsertSchema(clients).omit({
+export const insertClientSchema = createInsertSchema(clients, {
+  fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  phone: z.string()
+    .min(13, "Telefone deve ter formato completo: +351 9XX XXX XXX")
+    .max(17, "Telefone muito longo")
+    .regex(/^\+351\s9\d{2}\s\d{3}\s\d{3}$/, "Formato inválido. Use: +351 9XX XXX XXX"),
+}).omit({
   id: true,
   createdAt: true,
 });

@@ -230,13 +230,38 @@ export default function BookingForm() {
                       <FormItem>
                         <FormLabel>Telefone</FormLabel>
                         <FormControl>
-                          <Input 
-                            placeholder="+351 9XX XXX XXX"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(e.target.value);
-                            }}
-                          />
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+                              +351
+                            </span>
+                            <Input 
+                              placeholder="9XX XXX XXX"
+                              value={field.value ? field.value.replace('+351', '').trim() : ''}
+                              onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                                let formatted = value;
+                                
+                                // Format as 9XX XXX XXX
+                                if (value.length >= 3) {
+                                  formatted = value.slice(0, 3);
+                                  if (value.length >= 6) {
+                                    formatted += ' ' + value.slice(3, 6);
+                                    if (value.length >= 9) {
+                                      formatted += ' ' + value.slice(6, 9);
+                                    } else if (value.length > 6) {
+                                      formatted += ' ' + value.slice(6);
+                                    }
+                                  } else if (value.length > 3) {
+                                    formatted += ' ' + value.slice(3);
+                                  }
+                                }
+                                
+                                field.onChange('+351 ' + formatted);
+                              }}
+                              className="pl-16"
+                              maxLength={15} // +351 + space + 9 digits + 2 spaces
+                            />
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
