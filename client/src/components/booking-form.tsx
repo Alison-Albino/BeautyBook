@@ -255,21 +255,37 @@ export default function BookingForm() {
                                 }
                               }}
                             >
-                              <SelectTrigger className="w-32 flex-shrink-0">
+                              <SelectTrigger className="w-36 flex-shrink-0">
                                 <SelectValue>
                                   <div className="flex items-center gap-2">
-                                    <span className="text-lg">{selectedCountry.flag}</span>
-                                    <span className="text-sm font-medium">{selectedCountry.code}</span>
+                                    <span className="text-lg w-5 text-center">{selectedCountry.flag}</span>
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-xs font-medium uppercase tracking-wide">
+                                        {selectedCountry.name.slice(0, 2)}
+                                      </span>
+                                      <span className="text-sm font-mono text-gray-700">
+                                        {selectedCountry.code}
+                                      </span>
+                                    </div>
                                   </div>
                                 </SelectValue>
                               </SelectTrigger>
                               <SelectContent>
                                 {COUNTRIES.map((country) => (
                                   <SelectItem key={country.code} value={country.code}>
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-lg">{country.flag}</span>
-                                      <span className="font-medium">{country.code}</span>
-                                      <span className="text-sm text-gray-500">{country.name}</span>
+                                    <div className="flex items-center gap-3 w-full">
+                                      <span className="text-lg w-6 text-center">{country.flag}</span>
+                                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                                        <span className="font-medium text-sm uppercase tracking-wide">
+                                          {country.name.slice(0, 2)}
+                                        </span>
+                                        <span className="font-mono text-sm text-gray-600">
+                                          {country.code}
+                                        </span>
+                                        <span className="text-sm text-gray-500 truncate">
+                                          {country.name}
+                                        </span>
+                                      </div>
                                     </div>
                                   </SelectItem>
                                 ))}
