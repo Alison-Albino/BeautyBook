@@ -314,7 +314,7 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
                   <Filter className="h-5 w-5" />
                   Filtrar Agendamentos e Estatísticas
                 </CardTitle>
-                <CardDescription>Filtre os agendamentos e estatísticas por período (padrão: esta semana)</CardDescription>
+                <CardDescription>Filtre os agendamentos e estatísticas</CardDescription>
               </div>
               <div className="flex items-center gap-4 flex-wrap">
                 <Select value={dateFilter} onValueChange={setDateFilter}>
