@@ -54,9 +54,9 @@ export const insertClientSchema = createInsertSchema(clients, {
       if (phone.startsWith('+351')) {
         return /^\+351\s9\d{2}\s\d{3}\s\d{3}$/.test(phone);
       }
-      // Brasil: +55 (XX) 9XXXX-XXXX
+      // Brasil: +55 (XX) 9XXXX-XXXX ou +55 (XX) XXXXX-XXXX
       if (phone.startsWith('+55')) {
-        return /^\+55\s\(\d{2}\)\s9\d{4}-\d{4}$/.test(phone);
+        return /^\+55\s\(\d{2}\)\s\d{4,5}-\d{4}$/.test(phone);
       }
       // EUA: +1 (XXX) XXX-XXXX
       if (phone.startsWith('+1')) {

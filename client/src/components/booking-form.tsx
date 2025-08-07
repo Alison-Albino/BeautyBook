@@ -38,7 +38,7 @@ const appointmentSchema = z.object({
 // Country codes with flags
 const COUNTRIES = [
   { code: "+351", name: "Portugal", flag: "🇵🇹", format: "9XX XXX XXX", regex: /^\+351\s9\d{2}\s\d{3}\s\d{3}$/ },
-  { code: "+55", name: "Brasil", flag: "🇧🇷", format: "(XX) 9XXXX-XXXX", regex: /^\+55\s\(\d{2}\)\s9\d{4}-\d{4}$/ },
+  { code: "+55", name: "Brasil", flag: "🇧🇷", format: "(XX) XXXXX-XXXX", regex: /^\+55\s\(\d{2}\)\s\d{4,5}-\d{4}$/ },
   { code: "+1", name: "EUA", flag: "🇺🇸", format: "(XXX) XXX-XXXX", regex: /^\+1\s\(\d{3}\)\s\d{3}-\d{4}$/ },
   { code: "+44", name: "Reino Unido", flag: "🇬🇧", format: "XXXX XXX XXX", regex: /^\+44\s\d{4}\s\d{3}\s\d{3}$/ },
   { code: "+33", name: "França", flag: "🇫🇷", format: "X XX XX XX XX", regex: /^\+33\s\d\s\d{2}\s\d{2}\s\d{2}\s\d{2}$/ },
@@ -304,15 +304,18 @@ export default function BookingForm() {
                                   // Brasil: (XX) 9XXXX-XXXX
                                   if (value.length >= 2) {
                                     formatted = '(' + value.slice(0, 2) + ')';
-                                    if (value.length >= 7) {
-                                      formatted += ' 9' + value.slice(2, 6);
-                                      if (value.length >= 11) {
-                                        formatted += '-' + value.slice(6, 10);
-                                      } else if (value.length > 6) {
-                                        formatted += '-' + value.slice(6);
+                                    if (value.length >= 3) {
+                                      const phoneNumber = value.slice(2);
+                                      if (phoneNumber.length >= 5) {
+                                        formatted += ' ' + phoneNumber.slice(0, 5);
+                                        if (phoneNumber.length >= 9) {
+                                          formatted += '-' + phoneNumber.slice(5, 9);
+                                        } else if (phoneNumber.length > 5) {
+                                          formatted += '-' + phoneNumber.slice(5);
+                                        }
+                                      } else {
+                                        formatted += ' ' + phoneNumber;
                                       }
-                                    } else if (value.length > 2) {
-                                      formatted += ' ' + value.slice(2);
                                     }
                                   }
                                 } else if (selectedCountry.code === "+1") {
