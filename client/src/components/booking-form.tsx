@@ -13,7 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { clientValidationSchema, formatPhone, formatPrice, formatDate, getDateString, generateWhatsAppMessage } from "@/lib/validation";
 import { type Service, type Client } from "@shared/schema";
-import { ArrowRight, ArrowLeft, Check, Clock, Eye, Palette, Leaf, Gem } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Clock, Eye, Palette, Leaf, Gem, ChevronDown } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
 import logoPath from "@assets/logo bs_1754516178309.png";
 
@@ -34,6 +35,17 @@ const appointmentSchema = z.object({
   status: z.string().default("agendado"),
 });
 
+// Country codes with flags
+const COUNTRIES = [
+  { code: "+351", name: "Portugal", flag: "🇵🇹", format: "9XX XXX XXX", regex: /^\+351\s9\d{2}\s\d{3}\s\d{3}$/ },
+  { code: "+55", name: "Brasil", flag: "🇧🇷", format: "(XX) 9XXXX-XXXX", regex: /^\+55\s\(\d{2}\)\s9\d{4}-\d{4}$/ },
+  { code: "+1", name: "EUA", flag: "🇺🇸", format: "(XXX) XXX-XXXX", regex: /^\+1\s\(\d{3}\)\s\d{3}-\d{4}$/ },
+  { code: "+44", name: "Reino Unido", flag: "🇬🇧", format: "XXXX XXX XXX", regex: /^\+44\s\d{4}\s\d{3}\s\d{3}$/ },
+  { code: "+33", name: "França", flag: "🇫🇷", format: "X XX XX XX XX", regex: /^\+33\s\d\s\d{2}\s\d{2}\s\d{2}\s\d{2}$/ },
+  { code: "+49", name: "Alemanha", flag: "🇩🇪", format: "XXX XXXXXXX", regex: /^\+49\s\d{3}\s\d{7}$/ },
+  { code: "+34", name: "Espanha", flag: "🇪🇸", format: "XXX XXX XXX", regex: /^\+34\s\d{3}\s\d{3}\s\d{3}$/ },
+];
+
 export default function BookingForm() {
   const [currentStep, setCurrentStep] = useState<BookingStep>(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -41,6 +53,7 @@ export default function BookingForm() {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [clientData, setClientData] = useState<z.infer<typeof clientValidationSchema> | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]); // Portugal por padrão
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof clientValidationSchema>>({
@@ -230,36 +243,106 @@ export default function BookingForm() {
                       <FormItem>
                         <FormLabel>Telefone</FormLabel>
                         <FormControl>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
-                              +351
-                            </span>
+                          <div className="flex gap-2">
+                            {/* Country Selector */}
+                            <Select 
+                              value={selectedCountry.code} 
+                              onValueChange={(value) => {
+                                const country = COUNTRIES.find(c => c.code === value);
+                                if (country) {
+                                  setSelectedCountry(country);
+                                  field.onChange(''); // Reset phone when country changes
+                                }
+                              }}
+                            >
+                              <SelectTrigger className="w-32 flex-shrink-0">
+                                <SelectValue>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-lg">{selectedCountry.flag}</span>
+                                    <span className="text-sm font-medium">{selectedCountry.code}</span>
+                                  </div>
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                {COUNTRIES.map((country) => (
+                                  <SelectItem key={country.code} value={country.code}>
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-lg">{country.flag}</span>
+                                      <span className="font-medium">{country.code}</span>
+                                      <span className="text-sm text-gray-500">{country.name}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            
+                            {/* Phone Input */}
                             <Input 
-                              placeholder="9XX XXX XXX"
-                              value={field.value ? field.value.replace('+351', '').trim() : ''}
+                              placeholder={selectedCountry.format}
+                              value={field.value ? field.value.replace(selectedCountry.code, '').trim() : ''}
                               onChange={(e) => {
                                 const value = e.target.value.replace(/\D/g, ''); // Remove non-digits
                                 let formatted = value;
                                 
-                                // Format as 9XX XXX XXX
-                                if (value.length >= 3) {
-                                  formatted = value.slice(0, 3);
-                                  if (value.length >= 6) {
-                                    formatted += ' ' + value.slice(3, 6);
-                                    if (value.length >= 9) {
-                                      formatted += ' ' + value.slice(6, 9);
-                                    } else if (value.length > 6) {
-                                      formatted += ' ' + value.slice(6);
+                                // Format based on selected country
+                                if (selectedCountry.code === "+351") {
+                                  // Portugal: 9XX XXX XXX
+                                  if (value.length >= 3) {
+                                    formatted = value.slice(0, 3);
+                                    if (value.length >= 6) {
+                                      formatted += ' ' + value.slice(3, 6);
+                                      if (value.length >= 9) {
+                                        formatted += ' ' + value.slice(6, 9);
+                                      } else if (value.length > 6) {
+                                        formatted += ' ' + value.slice(6);
+                                      }
+                                    } else if (value.length > 3) {
+                                      formatted += ' ' + value.slice(3);
                                     }
-                                  } else if (value.length > 3) {
-                                    formatted += ' ' + value.slice(3);
+                                  }
+                                } else if (selectedCountry.code === "+55") {
+                                  // Brasil: (XX) 9XXXX-XXXX
+                                  if (value.length >= 2) {
+                                    formatted = '(' + value.slice(0, 2) + ')';
+                                    if (value.length >= 7) {
+                                      formatted += ' 9' + value.slice(2, 6);
+                                      if (value.length >= 11) {
+                                        formatted += '-' + value.slice(6, 10);
+                                      } else if (value.length > 6) {
+                                        formatted += '-' + value.slice(6);
+                                      }
+                                    } else if (value.length > 2) {
+                                      formatted += ' ' + value.slice(2);
+                                    }
+                                  }
+                                } else if (selectedCountry.code === "+1") {
+                                  // EUA: (XXX) XXX-XXXX
+                                  if (value.length >= 3) {
+                                    formatted = '(' + value.slice(0, 3) + ')';
+                                    if (value.length >= 6) {
+                                      formatted += ' ' + value.slice(3, 6);
+                                      if (value.length >= 10) {
+                                        formatted += '-' + value.slice(6, 10);
+                                      } else if (value.length > 6) {
+                                        formatted += '-' + value.slice(6);
+                                      }
+                                    } else if (value.length > 3) {
+                                      formatted += ' ' + value.slice(3);
+                                    }
+                                  }
+                                } else {
+                                  // Other countries: simple space formatting
+                                  if (value.length > 4) {
+                                    formatted = value.slice(0, 4) + ' ' + value.slice(4);
+                                  }
+                                  if (value.length > 7) {
+                                    formatted = formatted.slice(0, 9) + ' ' + formatted.slice(9);
                                   }
                                 }
                                 
-                                field.onChange('+351 ' + formatted);
+                                field.onChange(selectedCountry.code + ' ' + formatted);
                               }}
-                              className="pl-16"
-                              maxLength={15} // +351 + space + 9 digits + 2 spaces
+                              className="flex-1"
                             />
                           </div>
                         </FormControl>

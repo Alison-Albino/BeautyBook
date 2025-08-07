@@ -47,9 +47,24 @@ export const insertServiceSchema = createInsertSchema(services).omit({
 export const insertClientSchema = createInsertSchema(clients, {
   fullName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   phone: z.string()
-    .min(13, "Telefone deve ter formato completo: +351 9XX XXX XXX")
-    .max(17, "Telefone muito longo")
-    .regex(/^\+351\s9\d{2}\s\d{3}\s\d{3}$/, "Formato inválido. Use: +351 9XX XXX XXX"),
+    .min(10, "Telefone deve incluir código do país")
+    .max(25, "Telefone muito longo")
+    .refine((phone) => {
+      // Portugal: +351 9XX XXX XXX
+      if (phone.startsWith('+351')) {
+        return /^\+351\s9\d{2}\s\d{3}\s\d{3}$/.test(phone);
+      }
+      // Brasil: +55 (XX) 9XXXX-XXXX
+      if (phone.startsWith('+55')) {
+        return /^\+55\s\(\d{2}\)\s9\d{4}-\d{4}$/.test(phone);
+      }
+      // EUA: +1 (XXX) XXX-XXXX
+      if (phone.startsWith('+1')) {
+        return /^\+1\s\(\d{3}\)\s\d{3}-\d{4}$/.test(phone);
+      }
+      // Outros países: formato básico
+      return /^\+\d{1,4}\s[\d\s-()]{6,15}$/.test(phone);
+    }, "Formato de telefone inválido para o país selecionado"),
 }).omit({
   id: true,
   createdAt: true,
