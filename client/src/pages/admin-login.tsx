@@ -129,14 +129,6 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
               {loginMutation.isPending ? "A iniciar sessão..." : "Iniciar Sessão"}
             </Button>
           </form>
-
-          <div className="mt-6 p-4 bg-muted rounded-lg">
-            <p className="text-xs text-muted-foreground text-center">
-              <strong>Credenciais padrão:</strong><br />
-              Utilizador: admin<br />
-              Palavra-passe: admin123
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
