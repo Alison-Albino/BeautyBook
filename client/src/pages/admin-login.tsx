@@ -10,7 +10,16 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginRequest } from "@shared/schema";
 import { Eye, EyeOff, Shield } from "lucide-react";
-import logoPath from "@assets/logo bs_1754516178309.png";
+import { Scissors } from "lucide-react";
+
+const LogoSVG = () => (
+  <div className="flex items-center space-x-2">
+    <div className="w-8 h-8 bg-gradient-to-r from-amber-600 to-amber-700 rounded-full flex items-center justify-center">
+      <Scissors className="w-4 h-4 text-white" />
+    </div>
+    <span className="font-bold text-xl text-amber-700">Beatriz Sousa</span>
+  </div>
+);
 
 interface AdminLoginProps {
   onLoginSuccess: () => void;
@@ -60,7 +69,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
       <Card className="w-full max-w-md shadow-2xl border-0">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
-            <img src={logoPath} alt="Beatriz Sousa" className="h-20 w-auto" />
+            <LogoSVG />
           </div>
           <div className="space-y-2">
             <CardTitle className="text-2xl font-bold text-foreground flex items-center justify-center gap-2">
