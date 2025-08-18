@@ -75,9 +75,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium">
-                Nome de utilizador
-              </Label>
+              <Label htmlFor="username" className="text-sm font-medium">Usuário</Label>
               <Input
                 id="username"
                 type="text"
