@@ -1,237 +1,189 @@
-# 💄 Sistema de Agendamentos Beatriz Sousa
+# 💅 Beatriz Sousa - Sistema de Agendamento
 
-Sistema completo de agendamentos para salão de beleza com painel administrativo, desenvolvido com React, TypeScript, Express.js e PostgreSQL.
+Sistema completo de gestão para salão de beleza, desenvolvido com tecnologias modernas para otimizar operações administrativas e melhorar a experiência do cliente.
 
-## ✨ Funcionalidades
+## 🌟 Funcionalidades
 
-- 📅 Sistema de agendamentos online
-- 👤 Painel administrativo completo
-- 📊 Relatórios e estatísticas
-- 💬 Integração WhatsApp automática
-- 📱 Design responsivo
-- 🔒 Autenticação segura
-- 🎨 Interface moderna e intuitiva
+### 🏠 Para Clientes
+- **Agendamento Simplificado**: Apenas nome e telefone
+- **Integração WhatsApp**: Confirmação automática via WhatsApp
+- **Design Responsivo**: Funciona perfeitamente em todos os dispositivos
+- **Interface Intuitiva**: Processo de agendamento em 3 passos
 
-## 🚀 Deployment em VPS
+### 👩‍💼 Painel Administrativo
+- **Gestão de Serviços**: Pestanas, sobrancelhas, preços e durações
+- **Gestão de Agendamentos**: Visualização e controlo completo
+- **Relatórios Avançados**: Estatísticas de receita por período
+- **Filtros Inteligentes**: Por dia, semana, mês, ano ou período personalizado
+- **Autenticação Segura**: Sistema de login protegido
 
-### Painéis Recomendados para VPS
+## 🛠️ Tecnologias
 
-#### 1. **Coolify** (⭐ MAIS RECOMENDADO)
-- **Por quê**: Interface moderna, deploy com Docker, gratuito, fácil de usar
-- **Instalação**: `curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash`
-- **URL**: https://coolify.io
+### Frontend
+- **React 18** com TypeScript
+- **Vite** para desenvolvimento rápido
+- **Tailwind CSS** + **Shadcn/ui** para design moderno
+- **TanStack Query** para gestão de estado do servidor
+- **Wouter** para roteamento
+- **React Hook Form** + **Zod** para validações
 
-#### 2. **CapRover** 
-- **Por quê**: Interface simples, deploy com um clique, boa documentação
-- **Instalação**: `npm install -g caprover && caprover serversetup`
-- **URL**: https://caprover.com
+### Backend
+- **Node.js** com **Express**
+- **TypeScript** end-to-end
+- **PostgreSQL** com **Drizzle ORM**
+- **Sessões seguras** com bcrypt
+- **APIs RESTful** completas
 
-#### 3. **Dokku**
-- **Por quê**: Heroku-like, self-hosted, muito estável
-- **Instalação**: `wget -NP . https://dokku.com/install/v0.34.5/bootstrap.sh && bash bootstrap.sh`
+## 🚀 Deploy Rápido no Coolify
 
-### 📋 Passo a Passo - Deploy com Coolify (Recomendado)
-
-#### 1. Preparar VPS
+### 1. Clonar Repositório
 ```bash
-# Ubuntu 20.04+ ou Debian 11+
-sudo apt update && sudo apt upgrade -y
-sudo apt install curl wget git -y
+git clone https://github.com/seu-usuario/beatriz-sousa.git
+cd beatriz-sousa
 ```
 
-#### 2. Instalar Coolify
-```bash
-curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+### 2. Configurar no Coolify
+1. **Criar novo projeto** no painel Coolify
+2. **Selecionar "Docker Compose"**
+3. **Usar o ficheiro**: `docker-compose.coolify.yml`
+
+### 3. Variáveis de Ambiente
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://user:password@host:5432/database
+SESSION_SECRET=chave-secreta-muito-forte-32-caracteres-minimo
+PORT=5000
 ```
 
-#### 3. Baixar e Configurar Aplicação
-```bash
-# Download do arquivo ZIP da Replit
-unzip beatriz-sousa-app.zip
-cd beatriz-sousa-app
+### 4. Deploy
+Clique em **"Deploy"** e aguarde!
 
-# Configurar variáveis
-cp .env.example .env
-nano .env  # Editar com seus dados
-```
+📖 **Guia Completo**: Consulte [`README-COOLIFY.md`](./README-COOLIFY.md) para instruções detalhadas.
 
-#### 4. Deploy via Coolify
-1. Acesse Coolify: `http://seu-ip:8000`
-2. Crie conta admin
-3. Vá em "Projects" → "New Project"
-4. Selecione "Docker Compose"
-5. Cole o conteúdo do `docker-compose.yml`
-6. Configure as variáveis de ambiente
-7. Clique em "Deploy"
+## 🏃‍♂️ Desenvolvimento Local
 
-### 🐳 Deploy Manual com Docker
+### Pré-requisitos
+- Node.js 18+
+- PostgreSQL
+- npm ou yarn
 
-```bash
-# 1. Clone/extrair aplicação
-cd beatriz-sousa-app
-
-# 2. Configurar ambiente
-cp .env.example .env
-nano .env  # Editar DB_PASSWORD e SESSION_SECRET
-
-# 3. Executar script de deploy
-chmod +x deploy.sh
-./deploy.sh
-```
-
-### 🔧 Configuração Manual (Sem Docker)
-
-#### 1. Instalar Dependências do Sistema
-```bash
-# Node.js 18+
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# PostgreSQL
-sudo apt install postgresql postgresql-contrib
-```
-
-#### 2. Configurar PostgreSQL
-```bash
-sudo -u postgres psql
-CREATE DATABASE beatrizsousa;
-CREATE USER beatrizsousa WITH PASSWORD 'sua_senha_segura';
-GRANT ALL PRIVILEGES ON DATABASE beatrizsousa TO beatrizsousa;
-\q
-```
-
-#### 3. Configurar Aplicação
+### Instalação
 ```bash
 # Instalar dependências
 npm install
 
-# Configurar ambiente
-cp .env.example .env
-nano .env  # Configurar DATABASE_URL
+# Configurar base de dados
+# Criar ficheiro .env com DATABASE_URL
 
-# Build da aplicação
-npm run build
-
-# Executar migração
+# Executar migrações
 npm run db:push
 
-# Iniciar aplicação
+# Iniciar em modo desenvolvimento
+npm run dev
+```
+
+A aplicação estará disponível em `http://localhost:5000`
+
+## 📱 Como Usar
+
+### Agendamento (Cliente)
+1. Aceder à página principal
+2. Escolher serviço (pestanas/sobrancelhas)
+3. Selecionar data e hora
+4. Inserir nome e telefone
+5. Confirmação automática via WhatsApp
+
+### Administração
+1. Aceder a `/admin`
+2. Fazer login com credenciais de admin
+3. Gerir serviços, agendamentos e visualizar relatórios
+
+## 🔧 Scripts Disponíveis
+
+```bash
+# Desenvolvimento
+npm run dev
+
+# Build para produção
+npm run build
+
+# Iniciar produção
 npm start
+
+# Migrações de base de dados
+npm run db:push
+
+# Verificação de tipos
+npm run check
 ```
 
-#### 4. Configurar Nginx (Proxy Reverso)
-```nginx
-server {
-    listen 80;
-    server_name seu-dominio.com;
+## 📁 Estrutura do Projeto
 
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
+```
+beatriz-sousa/
+├── client/                 # Frontend React
+│   ├── src/
+│   │   ├── components/     # Componentes reutilizáveis
+│   │   ├── pages/         # Páginas da aplicação
+│   │   └── lib/           # Utilitários e configurações
+├── server/                # Backend Express
+│   ├── routes.ts          # Rotas da API
+│   ├── storage.ts         # Interface de dados
+│   └── db.ts             # Configuração da base de dados
+├── shared/               # Tipos e esquemas partilhados
+│   └── schema.ts         # Esquemas Drizzle + Zod
+├── Dockerfile.coolify    # Docker otimizado para Coolify
+└── docker-compose.coolify.yml # Configuração Docker Compose
 ```
 
-#### 5. SSL com Let's Encrypt
-```bash
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d seu-dominio.com
-```
+## 🎨 Design System
 
-### 📱 Configuração Pós-Deploy
+- **Cores**: Bege (#F3ECE3), Preto (#000000), Castanho (#9F766E), Rosa (#C8A49C)
+- **Tipografia**: Inter (sistema padrão)
+- **Componentes**: Baseados em Radix UI
+- **Ícones**: Lucide React
 
-#### 1. Acesso Admin
-- **URL**: `http://seu-dominio.com`
-- **Login**: admin
-- **Senha**: admin123
-- **⚠️ IMPORTANTE**: Altere a senha após primeiro login
+## 🔐 Segurança
 
-#### 2. Configurar WhatsApp
-- Número padrão: +351 935397642
-- Editar em: Admin → Configurações (se implementado)
+- ✅ Validação de formulários client-side e server-side
+- ✅ Senhas hasheadas com bcrypt
+- ✅ Sessões seguras com cookies HttpOnly
+- ✅ Validação de tipos com TypeScript + Zod
+- ✅ Sanitização de inputs
+- ✅ HTTPS automático (via Coolify)
 
-#### 3. Adicionar Serviços
-1. Login no painel admin
-2. Vá em "Serviços"
-3. Adicione seus serviços (Sobrancelhas, Pestanas, etc.)
+## 📊 Funcionalidades do Admin
 
-### 🔒 Segurança
+- **Dashboard**: Visão geral com estatísticas
+- **Gestão de Serviços**: CRUD completo
+- **Agendamentos**: Visualização e gestão
+- **Relatórios**: Receita filtrada por período
+- **Clientes**: Base de dados de clientes
 
-```bash
-# Configurar firewall
-sudo ufw allow 22   # SSH
-sudo ufw allow 80   # HTTP
-sudo ufw allow 443  # HTTPS
-sudo ufw enable
+## 🌍 Características Locais (Portugal)
 
-# Backup automático do banco
-# Adicionar ao crontab: 0 2 * * * pg_dump beatrizsousa > /backup/db_$(date +%Y%m%d).sql
-```
+- **Idioma**: Português (Portugal)
+- **Telefone**: Validação formato português (+351)
+- **Datas**: Formato DD/MM/AAAA
+- **Moeda**: Euro (€)
+- **WhatsApp**: Integração com número português
 
-### 📊 Monitoramento
+## 🔄 Atualizações Futuras
 
-#### Logs da Aplicação
-```bash
-# Docker
-docker-compose logs -f
-
-# Manual
-pm2 logs  # se usando PM2
-journalctl -u beatriz-sousa  # se usando systemd
-```
-
-#### Comandos Úteis
-```bash
-# Restart aplicação
-docker-compose restart
-
-# Backup banco
-docker-compose exec db pg_dump -U beatrizsousa beatrizsousa > backup.sql
-
-# Restore banco
-docker-compose exec -T db psql -U beatrizsousa beatrizsousa < backup.sql
-```
-
-## 🆘 Solução de Problemas
-
-### Problema: Aplicação não inicia
-```bash
-# Verificar logs
-docker-compose logs app
-
-# Verificar banco
-docker-compose logs db
-```
-
-### Problema: Não consegue fazer login
-```bash
-# Recriar admin user
-docker-compose exec app node -e "
-const bcrypt = require('bcrypt');
-const { Pool } = require('pg');
-// ... script de criação do admin
-"
-```
-
-### Problema: Erro de conexão com banco
-- Verificar variável DATABASE_URL no .env
-- Confirmar se PostgreSQL está rodando
-- Testar conexão: `docker-compose exec db psql -U beatrizsousa`
+- [ ] Sistema de notificações push
+- [ ] Calendário integrado
+- [ ] Relatórios em PDF
+- [ ] Multi-idioma
+- [ ] App mobile
+- [ ] Integração com sistemas de pagamento
 
 ## 📞 Suporte
 
-Para dúvidas sobre deployment:
-1. Verifique os logs primeiro
-2. Confirme configurações do .env
-3. Teste conectividade do banco
-4. Verifique portas abertas no firewall
+Para questões técnicas ou suporte:
+1. Verificar documentação completa
+2. Consultar logs da aplicação
+3. Testar conectividade da base de dados
 
 ---
-*Sistema desenvolvido para Beatriz Sousa - Salão de Beleza* 💄
+
+**Desenvolvido com ❤️ para o mercado português de beleza e estética**
