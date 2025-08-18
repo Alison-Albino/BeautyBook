@@ -16,16 +16,7 @@ import { type Service, type Client } from "@shared/schema";
 import { ArrowRight, ArrowLeft, Check, Clock, Eye, Palette, Leaf, Gem, ChevronDown } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { z } from "zod";
-import { Scissors } from "lucide-react";
-
-const LogoSVG = () => (
-  <div className="flex items-center space-x-2">
-    <div className="w-8 h-8 bg-gradient-to-r from-amber-600 to-amber-700 rounded-full flex items-center justify-center">
-      <Scissors className="w-4 h-4 text-white" />
-    </div>
-    <span className="font-bold text-xl text-amber-700">Beatriz Sousa</span>
-  </div>
-);
+import logoPath from "@assets/logo bs_1754516178309.png";
 
 type BookingStep = 1 | 2 | 3;
 

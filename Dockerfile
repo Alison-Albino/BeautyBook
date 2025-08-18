@@ -11,37 +11,22 @@ COPY package*.json ./
 # Install all dependencies
 RUN npm ci --verbose
 
-# Copy source code
-COPY . .
+# Copy project files and directories
+COPY client/ ./client/
+COPY server/ ./server/
+COPY shared/ ./shared/
+COPY attached_assets/ ./attached_assets/
+COPY *.config.* ./
+COPY *.json ./
 
-# Create production build configuration
-RUN echo 'import { defineConfig } from "vite"; \
-import react from "@vitejs/plugin-react"; \
-import path from "path"; \
-export default defineConfig({ \
-  plugins: [react()], \
-  resolve: { \
-    alias: { \
-      "@": path.resolve(__dirname, "client", "src"), \
-      "@shared": path.resolve(__dirname, "shared"), \
-      "@assets": path.resolve(__dirname, "attached_assets"), \
-    }, \
-  }, \
-  root: path.resolve(__dirname, "client"), \
-  build: { \
-    outDir: path.resolve(__dirname, "dist/public"), \
-    emptyOutDir: true, \
-  }, \
-  define: { \
-    "process.env.NODE_ENV": JSON.stringify("production"), \
-  }, \
-});' > vite.config.prod.js
+# Verify assets are copied
+RUN echo "=== Checking attached_assets ===" && ls -la attached_assets/ && echo "=== End assets check ==="
 
-# Build frontend with production config
-RUN npx vite build --config vite.config.prod.js
+# Set production environment
+ENV NODE_ENV=production
 
-# Build backend
-RUN npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+# Build the application
+RUN npm run build
 
 # Clean up dev dependencies
 RUN npm prune --production
