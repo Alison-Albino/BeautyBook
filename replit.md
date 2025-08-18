@@ -22,6 +22,9 @@ This is a beauty salon appointment booking system called "Beatriz Sousa" built w
 - ✓ Successfully migrated from Replit Agent to standard Replit environment
 - ✓ Database properly initialized with PostgreSQL and all tables created
 - ✓ Admin authentication system fixed with fresh bcrypt password hash
+- ✓ Fixed admin panel date filtering system for week, month, and year filters
+- ✓ Corrected appointment date comparison logic to work with YYYY-MM-DD string format
+- ✓ Fixed week filter to show current week (Monday to Sunday) instead of last 7 days
 
 # User Preferences
 

@@ -237,36 +237,59 @@ export default function AdminDashboard({ onLogout }: AdminDashboardProps) {
     if (dateFilter === "all") return appointments;
     
     const now = new Date();
-    let startDate: Date;
-    let endDate: Date = new Date();
+    let startDateStr: string;
+    let endDateStr: string;
+    
+    // Format date as YYYY-MM-DD to match database format
+    const formatDate = (date: Date): string => {
+      return date.toISOString().split('T')[0];
+    };
     
     switch (dateFilter) {
       case "today":
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+        startDateStr = formatDate(now);
+        endDateStr = formatDate(now);
         break;
       case "week":
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        // Get start of current week (Monday)
+        const dayOfWeek = now.getDay();
+        const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Sunday = 0, Monday = 1
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - daysToMonday);
+        
+        // Get end of current week (Sunday)
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        
+        startDateStr = formatDate(startOfWeek);
+        endDateStr = formatDate(endOfWeek);
         break;
       case "month":
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        
+        startDateStr = formatDate(startOfMonth);
+        endDateStr = formatDate(endOfMonth);
         break;
       case "year":
-        startDate = new Date(now.getFullYear(), 0, 1);
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear(), 11, 31);
+        
+        startDateStr = formatDate(startOfYear);
+        endDateStr = formatDate(endOfYear);
         break;
       case "custom":
         if (!customDateFrom || !customDateTo) return appointments;
-        startDate = new Date(customDateFrom);
-        endDate = new Date(customDateTo);
-        endDate.setHours(23, 59, 59);
+        startDateStr = customDateFrom;
+        endDateStr = customDateTo;
         break;
       default:
         return appointments;
     }
     
     return appointments.filter((apt: AppointmentWithDetails) => {
-      const aptDate = new Date(apt.date);
-      return aptDate >= startDate && aptDate <= endDate;
+      // Compare date strings directly since they're in YYYY-MM-DD format
+      return apt.date >= startDateStr && apt.date <= endDateStr;
     });
   };
 
