@@ -34,31 +34,27 @@ Sistema completo de gestão para salão de beleza, desenvolvido com tecnologias 
 - **Sessões seguras** com bcrypt
 - **APIs RESTful** completas
 
-## 🚀 Deploy Rápido no Coolify
+## 🚀 Deploy Direto no Coolify (Node.js)
 
-### 1. Clonar Repositório
-```bash
-git clone https://github.com/seu-usuario/beatriz-sousa.git
-cd beatriz-sousa
-```
+### 1. Configurar no Coolify
+1. **Criar projeto** → **Node.js Application**
+2. **Conectar GitHub** → Selecionar repositório
+3. **Build Command**: `npm install && npm run build`
+4. **Start Command**: `./start.sh`
+5. **Port**: `5000`
 
-### 2. Configurar no Coolify
-1. **Criar novo projeto** no painel Coolify
-2. **Selecionar "Docker Compose"**
-3. **Usar o ficheiro**: `docker-compose.coolify.yml`
-
-### 3. Variáveis de Ambiente
+### 2. Variáveis de Ambiente
 ```env
 NODE_ENV=production
-DATABASE_URL=postgresql://user:password@host:5432/database
+DATABASE_URL=postgresql://postgres:123456@postgresql-database:5432/postgres
 SESSION_SECRET=chave-secreta-muito-forte-32-caracteres-minimo
 PORT=5000
 ```
 
-### 4. Deploy
-Clique em **"Deploy"** e aguarde!
+### 3. Deploy
+Clique em **"Deploy"** - muito mais rápido que Docker!
 
-📖 **Guia Completo**: Consulte [`README-COOLIFY.md`](./README-COOLIFY.md) para instruções detalhadas.
+📖 **Guia Completo**: [`COOLIFY-NODEJS-DEPLOY.md`](./COOLIFY-NODEJS-DEPLOY.md)
 
 ## 🏃‍♂️ Desenvolvimento Local
 

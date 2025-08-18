@@ -35,6 +35,9 @@ This is a beauty salon appointment booking system called "Beatriz Sousa" built w
 - ✓ Added production initialization scripts and comprehensive deployment documentation
 - ✓ Removed default admin credentials from login page for security
 - ✓ Application fully tested and ready for production deployment via Coolify
+- ✓ Removed Docker deployment and created simpler Node.js direct deployment (2025-08-18)
+- ✓ Created start.sh script for automatic setup and initialization
+- ✓ Optimized for Coolify Node.js application deployment (faster and simpler)
 
 # User Preferences
 
