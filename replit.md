@@ -29,6 +29,12 @@ This is a beauty salon appointment booking system called "Beatriz Sousa" built w
 - ✓ Created comprehensive deployment guides for VPS deployment
 - ✓ Added Dockerfile, docker-compose.yml, and automated deployment scripts
 - ✓ Configured for production with PostgreSQL container and security best practices
+- ✓ Migrated successfully from Replit Agent to standard Replit environment (2025-08-18)
+- ✓ Fixed database configuration from Neon serverless to standard PostgreSQL
+- ✓ Created optimized Coolify deployment files (Dockerfile.coolify, docker-compose.coolify.yml)
+- ✓ Added production initialization scripts and comprehensive deployment documentation
+- ✓ Removed default admin credentials from login page for security
+- ✓ Application fully tested and ready for production deployment via Coolify
 
 # User Preferences
 
