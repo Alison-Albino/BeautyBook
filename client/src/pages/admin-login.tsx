@@ -89,9 +89,7 @@ export default function AdminLogin({ onLoginSuccess }: AdminLoginProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
-                Palavra-passe
-              </Label>
+              <Label htmlFor="password" className="text-sm font-medium">Senha:</Label>
               <div className="relative">
                 <Input
                   id="password"
