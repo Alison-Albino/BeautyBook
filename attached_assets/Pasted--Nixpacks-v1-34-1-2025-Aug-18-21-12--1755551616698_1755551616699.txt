@@ -1,0 +1,57 @@
+╔══════════════════════════════ Nixpacks v1.34.1 ══════════════════════════════╗
+2025-Aug-18 21:12:39.298691
+║ setup      │ nodejs_18, npm-9_x, openssl, curl, wget                         ║
+2025-Aug-18 21:12:39.298691
+║──────────────────────────────────────────────────────────────────────────────║
+2025-Aug-18 21:12:39.298691
+║ caddy      │ pkgs: caddy                                                     ║
+2025-Aug-18 21:12:39.298691
+║            │ cmds: caddy fmt --overwrite /assets/Caddyfile                   ║
+2025-Aug-18 21:12:39.298691
+║──────────────────────────────────────────────────────────────────────────────║
+2025-Aug-18 21:12:39.298691
+║ install    │ npm ci                                                          ║
+2025-Aug-18 21:12:39.298691
+║──────────────────────────────────────────────────────────────────────────────║
+2025-Aug-18 21:12:39.298691
+║ build      │ npm run build                                                   ║
+2025-Aug-18 21:12:39.298691
+║──────────────────────────────────────────────────────────────────────────────║
+2025-Aug-18 21:12:39.298691
+║ start      │ exec caddy run --config /assets/Caddyfile --adapter caddyfile   ║
+2025-Aug-18 21:12:39.298691
+║            │ 2>&1                                                            ║
+2025-Aug-18 21:12:39.298691
+╚══════════════════════════════════════════════════════════════════════════════╝
+2025-Aug-18 21:12:39.298691
+2025-Aug-18 21:12:39.298691
+2025-Aug-18 21:12:39.298691
+Saved output to:
+2025-Aug-18 21:12:39.298691
+/artifacts/zsccwwww4ccok4s4g048kos4
+2025-Aug-18 21:12:41.630972
+[CMD]: docker exec zsccwwww4ccok4s4g048kos4 bash -c 'cat /artifacts/build.sh'
+2025-Aug-18 21:12:41.630972
+docker build --add-host coolify:10.0.1.5 --add-host coolify-db:10.0.1.2 --add-host coolify-realtime:10.0.1.3 --add-host coolify-redis:10.0.1.4 --add-host v4ssg8ckowcow4o84ksk40wc:10.0.1.6 --network host -f /artifacts/zsccwwww4ccok4s4g048kos4/.nixpacks/Dockerfile --build-arg CI='true' --build-arg NIXPACKS_METADATA='node' --build-arg NIXPACKS_SPA_OUTPUT_DIR='dist' --build-arg NODE_ENV='production' --build-arg NPM_CONFIG_PRODUCTION='false' --build-arg SOURCE_COMMIT='bd1994c373a11c0f1861335a2f2bf1aaa27b0728' --build-arg 'COOLIFY_URL=http://s4so4wwcow0ccoc4gko0kgko.37.59.112.125.sslip.io' --build-arg 'COOLIFY_FQDN=s4so4wwcow0ccoc4gko0kgko.37.59.112.125.sslip.io' --build-arg 'COOLIFY_BRANCH=main' --build-arg 'COOLIFY_RESOURCE_UUID=s4so4wwcow0ccoc4gko0kgko' --build-arg 'COOLIFY_CONTAINER_NAME=s4so4wwcow0ccoc4gko0kgko-211224432523' --progress plain -t s4so4wwcow0ccoc4gko0kgko:bd1994c373a11c0f1861335a2f2bf1aaa27b0728 /artifacts/zsccwwww4ccok4s4g048kos4
+2025-Aug-18 21:12:43.601361
+[CMD]: docker exec zsccwwww4ccok4s4g048kos4 bash -c 'bash /artifacts/build.sh'
+2025-Aug-18 21:12:43.601361
+#0 building with "default" instance using docker driver
+2025-Aug-18 21:12:43.601361
+2025-Aug-18 21:12:43.601361
+#1 [internal] load build definition from Dockerfile
+2025-Aug-18 21:12:43.601361
+#1 transferring dockerfile: 1.60kB 0.0s done
+2025-Aug-18 21:12:43.601361
+#1 DONE 0.0s
+2025-Aug-18 21:12:43.601361
+2025-Aug-18 21:12:43.601361
+#2 [internal] load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1741046653
+2025-Aug-18 21:12:44.233486
+#2 DONE 0.6s
+2025-Aug-18 21:12:44.336697
+#3 [internal] load .dockerignore
+2025-Aug-18 21:12:44.336697
+#3 transferring context: 256B 0.0s done
+2025-Aug-18 21:12:44.336697
+#3 DONE 0.1s
