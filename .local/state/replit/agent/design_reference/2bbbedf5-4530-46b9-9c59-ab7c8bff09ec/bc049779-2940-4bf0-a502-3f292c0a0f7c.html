@@ -1,0 +1,884 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bella Sobrancelhas - Sistema de Agendamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#E91E63',
+                        'primary-light': '#F8BBD9',
+                        'primary-dark': '#AD1457',
+                        'beauty-gold': '#FFD700'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-cut text-primary text-2xl"></i>
+                    <h1 class="text-xl font-semibold text-gray-900">Bella Sobrancelhas</h1>
+                </div>
+                <div class="flex space-x-4">
+                    <button id="clientViewBtn" class="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition-colors">
+                        <i class="fas fa-user mr-2"></i>Área do Cliente
+                    </button>
+                    <button id="adminViewBtn" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
+                        <i class="fas fa-cog mr-2"></i>Painel Admin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- @COMPONENT: ClientBookingView -->
+    <div id="clientView" class="min-h-screen">
+        <!-- Hero Section -->
+        <div class="bg-gradient-to-br from-primary to-primary-dark text-white py-16">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <h2 class="text-4xl font-bold mb-4">Agende seu Atendimento</h2>
+                <p class="text-xl opacity-90">Transforme seu olhar com nossos serviços especializados em sobrancelhas</p>
+            </div>
+        </div>
+
+        <!-- Booking Form Section -->
+        <div class="max-w-4xl mx-auto px-4 py-12">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <!-- Step Indicator -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="flex items-center">
+                            <div id="step1-indicator" class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-semibold">1</div>
+                            <span class="ml-2 text-sm font-medium text-primary">Seus Dados</span>
+                        </div>
+                        <div class="w-12 h-0.5 bg-gray-300"></div>
+                        <div class="flex items-center">
+                            <div id="step2-indicator" class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-semibold">2</div>
+                            <span class="ml-2 text-sm font-medium text-gray-600">Serviço</span>
+                        </div>
+                        <div class="w-12 h-0.5 bg-gray-300"></div>
+                        <div class="flex items-center">
+                            <div id="step3-indicator" class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-semibold">3</div>
+                            <span class="ml-2 text-sm font-medium text-gray-600">Data & Hora</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Personal Information -->
+                <div id="step1" class="space-y-6">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6">Informações Pessoais</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="relative">
+                            <input type="text" id="fullName" class="peer w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder=" " data-mock="true">
+                            <label for="fullName" class="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-gray-700 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary">Nome Completo</label>
+                        </div>
+                        
+                        <div class="relative">
+                            <input type="text" id="cpf" class="peer w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder=" " maxlength="14" data-mock="true">
+                            <label for="cpf" class="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-gray-700 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary">CPF</label>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <input type="tel" id="phone" class="peer w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder=" " data-mock="true">
+                        <label for="phone" class="absolute left-4 -top-2.5 bg-white px-2 text-sm font-medium text-gray-700 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary">Telefone (Opcional)</label>
+                    </div>
+
+                    <button id="nextStep1" class="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors">
+                        Continuar <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+                <!-- Step 2: Service Selection -->
+                <div id="step2" class="space-y-6 hidden">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6">Escolha seu Serviço</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <!-- Service Card 1 -->
+                        <div class="service-card p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary transition-colors" data-service="design" data-price="45" data-duration="60">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900">Design de Sobrancelhas</h4>
+                                    <p class="text-gray-600 text-sm mt-1">Modelagem completa com pinça e cera</p>
+                                    <div class="flex items-center mt-3 space-x-4">
+                                        <span class="text-2xl font-bold text-primary">R$ 45</span>
+                                        <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>60 min</span>
+                                    </div>
+                                </div>
+                                <i class="fas fa-eye text-primary text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 2 -->
+                        <div class="service-card p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary transition-colors" data-service="micropigmentacao" data-price="280" data-duration="120">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900">Micropigmentação</h4>
+                                    <p class="text-gray-600 text-sm mt-1">Técnica fio a fio para preenchimento natural</p>
+                                    <div class="flex items-center mt-3 space-x-4">
+                                        <span class="text-2xl font-bold text-primary">R$ 280</span>
+                                        <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>2h</span>
+                                    </div>
+                                </div>
+                                <i class="fas fa-palette text-primary text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 3 -->
+                        <div class="service-card p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary transition-colors" data-service="henna" data-price="35" data-duration="45">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900">Henna</h4>
+                                    <p class="text-gray-600 text-sm mt-1">Coloração natural e preenchimento temporário</p>
+                                    <div class="flex items-center mt-3 space-x-4">
+                                        <span class="text-2xl font-bold text-primary">R$ 35</span>
+                                        <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>45 min</span>
+                                    </div>
+                                </div>
+                                <i class="fas fa-leaf text-primary text-2xl"></i>
+                            </div>
+                        </div>
+
+                        <!-- Service Card 4 -->
+                        <div class="service-card p-6 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-primary transition-colors" data-service="combo" data-price="65" data-duration="90">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-900">Design + Henna</h4>
+                                    <p class="text-gray-600 text-sm mt-1">Pacote completo: modelagem e coloração</p>
+                                    <div class="flex items-center mt-3 space-x-4">
+                                        <span class="text-2xl font-bold text-primary">R$ 65</span>
+                                        <span class="text-sm text-gray-500"><i class="fas fa-clock mr-1"></i>90 min</span>
+                                    </div>
+                                </div>
+                                <i class="fas fa-gem text-beauty-gold text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button id="backStep1" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Voltar
+                        </button>
+                        <button id="nextStep2" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Continuar <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Date & Time Selection -->
+                <div id="step3" class="space-y-6 hidden">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6">Escolha a Data e Horário</h3>
+                    
+                    <div class="grid lg:grid-cols-2 gap-8">
+                        <!-- Calendar -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Selecione a Data</h4>
+                            <div class="bg-white border border-gray-200 rounded-lg p-4">
+                                <!-- Calendar Header -->
+                                <div class="flex items-center justify-between mb-4">
+                                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                                        <i class="fas fa-chevron-left text-gray-600"></i>
+                                    </button>
+                                    <h5 class="font-semibold text-gray-900">Dezembro 2024</h5>
+                                    <button class="p-2 hover:bg-gray-100 rounded-lg">
+                                        <i class="fas fa-chevron-right text-gray-600"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Calendar Grid -->
+                                <div class="grid grid-cols-7 gap-1 text-center">
+                                    <!-- Days of week -->
+                                    <div class="text-xs font-medium text-gray-500 py-2">Dom</div>
+                                    <div class="text-xs font-medium text-gray-500 py-2">Seg</div>
+                                    <div class="text-xs font-medium text-gray-500 py-2">Ter</div>
+                                    <div class="text-xs font-medium text-gray-500 py-2">Qua</div>
+                                    <div class="text-xs font-medium text-gray-500 py-2">Qui</div>
+                                    <div class="text-xs font-medium text-gray-500 py-2">Sex</div>
+                                    <div class="text-xs font-medium text-gray-500 py-2">Sáb</div>
+                                    
+                                    <!-- Calendar days -->
+                                    <div class="calendar-day p-2 text-gray-400">1</div>
+                                    <div class="calendar-day p-2 text-gray-400">2</div>
+                                    <div class="calendar-day p-2 text-gray-400">3</div>
+                                    <div class="calendar-day p-2 text-gray-400">4</div>
+                                    <div class="calendar-day p-2 text-gray-400">5</div>
+                                    <div class="calendar-day p-2 text-gray-400">6</div>
+                                    <div class="calendar-day p-2 text-gray-400">7</div>
+                                    
+                                    <div class="calendar-day p-2 text-gray-400">8</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-09">9</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-10">10</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-11">11</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-12">12</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-13">13</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-14">14</div>
+                                    
+                                    <div class="calendar-day p-2 text-gray-400">15</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-16">16</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-17">17</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-18">18</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-19">19</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-20">20</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-21">21</div>
+                                    
+                                    <div class="calendar-day p-2 text-gray-400">22</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-23">23</div>
+                                    <div class="calendar-day p-2 text-gray-400">24</div>
+                                    <div class="calendar-day p-2 text-gray-400">25</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-26">26</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-27">27</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-28">28</div>
+                                    
+                                    <div class="calendar-day p-2 text-gray-400">29</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-30">30</div>
+                                    <div class="calendar-day p-2 cursor-pointer hover:bg-primary hover:text-white rounded-lg transition-colors" data-date="2024-12-31">31</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Time Slots -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Horários Disponíveis</h4>
+                            <div id="timeSlots" class="space-y-2">
+                                <p class="text-gray-500 text-center py-8">Selecione uma data para ver os horários disponíveis</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Service Summary -->
+                    <div id="selectedServiceSummary" class="bg-primary-light bg-opacity-20 rounded-lg p-4 hidden">
+                        <h5 class="font-semibold text-gray-900 mb-2">Resumo do Agendamento</h5>
+                        <div class="grid md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-600">Serviço:</span>
+                                <span id="summaryService" class="block font-medium text-gray-900"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Data:</span>
+                                <span id="summaryDate" class="block font-medium text-gray-900"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Horário:</span>
+                                <span id="summaryTime" class="block font-medium text-gray-900"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <button id="backStep2" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-arrow-left mr-2"></i>Voltar
+                        </button>
+                        <button id="confirmBooking" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Confirmar Agendamento <i class="fas fa-check ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ClientBookingView -->
+
+    <!-- @COMPONENT: AdminDashboard -->
+    <div id="adminView" class="min-h-screen hidden">
+        <!-- Admin Header -->
+        <div class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="py-6">
+                    <h2 class="text-3xl font-bold text-gray-900">Painel Administrativo</h2>
+                    <p class="mt-1 text-gray-600">Gerencie todos os agendamentos do salão</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Hoje</p>
+                            <p class="text-2xl font-semibold text-gray-900" data-bind="todayAppointments">8</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Esta Semana</p>
+                            <p class="text-2xl font-semibold text-gray-900" data-bind="weekAppointments">42</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-yellow-100 rounded-lg">
+                            <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Pendentes</p>
+                            <p class="text-2xl font-semibold text-gray-900" data-bind="pendingAppointments">3</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-primary-light rounded-lg">
+                            <i class="fas fa-dollar-sign text-primary text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Faturamento Hoje</p>
+                            <p class="text-2xl font-semibold text-gray-900" data-bind="todayRevenue">R$ 520</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters and Actions -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                            <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                                <option>Todos os Status</option>
+                                <option>Agendado</option>
+                                <option>Confirmado</option>
+                                <option>Em Andamento</option>
+                                <option>Concluído</option>
+                                <option>Cancelado</option>
+                            </select>
+                            
+                            <input type="date" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                            
+                            <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" data-mock="true">
+                                <option>Todos os Serviços</option>
+                                <option>Design de Sobrancelhas</option>
+                                <option>Micropigmentação</option>
+                                <option>Henna</option>
+                                <option>Design + Henna</option>
+                            </select>
+                        </div>
+                        
+                        <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Novo Agendamento
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Table -->
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Agendamentos</h3>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliente</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Serviço</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horário</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <!-- @MAP: appointments.map(appointment => ( -->
+                            <tr class="hover:bg-gray-50" data-mock="true">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center">
+                                            <span class="text-primary font-semibold">MF</span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900" data-bind="appointment.clientName">Maria Fernanda Silva</div>
+                                            <div class="text-sm text-gray-500" data-bind="appointment.clientPhone">(11) 99999-9999</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="appointment.service">Design de Sobrancelhas</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="appointment.date">09/12/2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="appointment.time">14:00</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full" data-bind="appointment.status">Confirmado</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" data-bind="appointment.price">R$ 45,00</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-800" data-event="click:editAppointment">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800" data-event="click:completeAppointment">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800" data-event="click:cancelAppointment">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50" data-mock="true">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center">
+                                            <span class="text-primary font-semibold">AS</span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Ana Santos</div>
+                                            <div class="text-sm text-gray-500">(11) 88888-8888</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Micropigmentação</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">09/12/2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">16:00</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded-full">Agendado</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">R$ 280,00</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50" data-mock="true">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center">
+                                            <span class="text-primary font-semibold">CB</span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Carla Barbosa</div>
+                                            <div class="text-sm text-gray-500">(11) 77777-7777</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Design + Henna</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">10/12/2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">10:00</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full">Pendente</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">R$ 65,00</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr class="hover:bg-gray-50" data-mock="true">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-primary-light rounded-full flex items-center justify-center">
+                                            <span class="text-primary font-semibold">JO</span>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-gray-900">Juliana Oliveira</div>
+                                            <div class="text-sm text-gray-500">(11) 66666-6666</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Henna</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">10/12/2024</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">14:30</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">Concluído</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">R$ 35,00</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                                    <button class="text-blue-600 hover:text-blue-800">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="text-green-600 hover:text-green-800">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <!-- @END_MAP )) -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Anterior</button>
+                            <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Próximo</button>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Mostrando <span class="font-medium">1</span> até <span class="font-medium">10</span> de <span class="font-medium">42</span> resultados
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                                    <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="bg-primary border-primary text-white relative inline-flex items-center px-4 py-2 border text-sm font-medium">1</button>
+                                    <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">2</button>
+                                    <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">3</button>
+                                    <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AdminDashboard -->
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Agendamento Confirmado!</h3>
+                <p class="text-gray-600 mb-6">Seu agendamento foi realizado com sucesso. Você receberá uma confirmação em breve.</p>
+                <button id="closeSuccessModal" class="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Application state
+            // @STATE: currentStep:number = 1
+            // @STATE: selectedService:object = null
+            // @STATE: selectedDate:string = null
+            // @STATE: selectedTime:string = null
+            // @STATE: currentView:string = 'client'
+            
+            let currentStep = 1;
+            let selectedService = null;
+            let selectedDate = null;
+            let selectedTime = null;
+            let currentView = 'client';
+
+            // DOM elements
+            const clientView = document.getElementById('clientView');
+            const adminView = document.getElementById('adminView');
+            const clientViewBtn = document.getElementById('clientViewBtn');
+            const adminViewBtn = document.getElementById('adminViewBtn');
+
+            // Step elements
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+
+            // Navigation functions
+            function showClientView() {
+                currentView = 'client';
+                clientView.classList.remove('hidden');
+                adminView.classList.add('hidden');
+                clientViewBtn.classList.add('border-primary', 'text-primary');
+                clientViewBtn.classList.remove('bg-primary', 'text-white');
+                adminViewBtn.classList.remove('border-primary', 'text-primary');
+                adminViewBtn.classList.add('bg-primary', 'text-white');
+            }
+
+            function showAdminView() {
+                currentView = 'admin';
+                adminView.classList.remove('hidden');
+                clientView.classList.add('hidden');
+                adminViewBtn.classList.add('border-primary', 'text-primary');
+                adminViewBtn.classList.remove('bg-primary', 'text-white');
+                clientViewBtn.classList.remove('border-primary', 'text-primary');
+                clientViewBtn.classList.add('bg-primary', 'text-white');
+            }
+
+            // Step navigation functions
+            function showStep(step) {
+                // Hide all steps
+                step1.classList.add('hidden');
+                step2.classList.add('hidden');
+                step3.classList.add('hidden');
+
+                // Show current step
+                if (step === 1) {
+                    step1.classList.remove('hidden');
+                    updateStepIndicator(1);
+                } else if (step === 2) {
+                    step2.classList.remove('hidden');
+                    updateStepIndicator(2);
+                } else if (step === 3) {
+                    step3.classList.remove('hidden');
+                    updateStepIndicator(3);
+                }
+
+                currentStep = step;
+            }
+
+            function updateStepIndicator(activeStep) {
+                const indicators = [
+                    document.getElementById('step1-indicator'),
+                    document.getElementById('step2-indicator'),
+                    document.getElementById('step3-indicator')
+                ];
+
+                indicators.forEach((indicator, index) => {
+                    const stepNumber = index + 1;
+                    const isActive = stepNumber <= activeStep;
+                    
+                    if (isActive) {
+                        indicator.classList.remove('bg-gray-300', 'text-gray-600');
+                        indicator.classList.add('bg-primary', 'text-white');
+                        indicator.nextElementSibling.classList.remove('text-gray-600');
+                        indicator.nextElementSibling.classList.add('text-primary');
+                    } else {
+                        indicator.classList.add('bg-gray-300', 'text-gray-600');
+                        indicator.classList.remove('bg-primary', 'text-white');
+                        indicator.nextElementSibling.classList.add('text-gray-600');
+                        indicator.nextElementSibling.classList.remove('text-primary');
+                    }
+                });
+            }
+
+            // Service selection
+            function handleServiceSelection() {
+                const serviceCards = document.querySelectorAll('.service-card');
+                const nextStep2Btn = document.getElementById('nextStep2');
+
+                serviceCards.forEach(card => {
+                    card.addEventListener('click', function() {
+                        // Remove selection from all cards
+                        serviceCards.forEach(c => {
+                            c.classList.remove('border-primary', 'bg-primary-light', 'bg-opacity-10');
+                            c.classList.add('border-gray-200');
+                        });
+
+                        // Add selection to clicked card
+                        this.classList.remove('border-gray-200');
+                        this.classList.add('border-primary', 'bg-primary-light', 'bg-opacity-10');
+
+                        // Store selected service data
+                        selectedService = {
+                            type: this.dataset.service,
+                            price: this.dataset.price,
+                            duration: this.dataset.duration,
+                            name: this.querySelector('h4').textContent
+                        };
+
+                        // Enable next button
+                        nextStep2Btn.disabled = false;
+                        nextStep2Btn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                    });
+                });
+            }
+
+            // Calendar and time slot functionality
+            function handleCalendarSelection() {
+                const calendarDays = document.querySelectorAll('.calendar-day[data-date]');
+                const timeSlots = document.getElementById('timeSlots');
+                const confirmBtn = document.getElementById('confirmBooking');
+
+                calendarDays.forEach(day => {
+                    day.addEventListener('click', function() {
+                        // Remove selection from all days
+                        calendarDays.forEach(d => {
+                            d.classList.remove('bg-primary', 'text-white');
+                        });
+
+                        // Add selection to clicked day
+                        this.classList.add('bg-primary', 'text-white');
+                        selectedDate = this.dataset.date;
+
+                        // Generate time slots for selected date
+                        generateTimeSlots();
+                    });
+                });
+
+                function generateTimeSlots() {
+                    const times = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00'];
+                    const unavailableTimes = ['11:00', '16:00']; // Mock unavailable times
+                    
+                    timeSlots.innerHTML = '';
+                    
+                    times.forEach(time => {
+                        const isAvailable = !unavailableTimes.includes(time);
+                        const timeSlot = document.createElement('button');
+                        timeSlot.className = `w-full p-3 rounded-lg border text-left transition-colors ${
+                            isAvailable 
+                                ? 'border-gray-300 hover:border-primary hover:bg-primary-light hover:bg-opacity-20' 
+                                : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'
+                        }`;
+                        timeSlot.innerHTML = `
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">${time}</span>
+                                <span class="text-sm text-gray-600">${isAvailable ? 'Disponível' : 'Ocupado'}</span>
+                            </div>
+                        `;
+                        
+                        if (isAvailable) {
+                            timeSlot.addEventListener('click', function() {
+                                // Remove selection from all time slots
+                                document.querySelectorAll('#timeSlots button').forEach(btn => {
+                                    btn.classList.remove('border-primary', 'bg-primary-light', 'bg-opacity-20');
+                                });
+                                
+                                // Add selection to clicked slot
+                                this.classList.add('border-primary', 'bg-primary-light', 'bg-opacity-20');
+                                selectedTime = time;
+                                
+                                // Update summary and enable confirm button
+                                updateBookingSummary();
+                                confirmBtn.disabled = false;
+                                confirmBtn.classList.remove('disabled:opacity-50', 'disabled:cursor-not-allowed');
+                            });
+                        }
+                        
+                        timeSlots.appendChild(timeSlot);
+                    });
+                }
+            }
+
+            function updateBookingSummary() {
+                const summary = document.getElementById('selectedServiceSummary');
+                const serviceSpan = document.getElementById('summaryService');
+                const dateSpan = document.getElementById('summaryDate');
+                const timeSpan = document.getElementById('summaryTime');
+
+                if (selectedService && selectedDate && selectedTime) {
+                    serviceSpan.textContent = selectedService.name;
+                    dateSpan.textContent = new Date(selectedDate).toLocaleDateString('pt-BR');
+                    timeSpan.textContent = selectedTime;
+                    summary.classList.remove('hidden');
+                }
+            }
+
+            // Form validation
+            function validateStep1() {
+                const fullName = document.getElementById('fullName').value.trim();
+                const cpf = document.getElementById('cpf').value.trim();
+                
+                return fullName.length >= 3 && cpf.length >= 11;
+            }
+
+            // CPF Mask
+            function applyCPFMask() {
+                const cpfInput = document.getElementById('cpf');
+                cpfInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length <= 11) {
+                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                    }
+                    e.target.value = value;
+                });
+            }
+
+            // Modal functions
+            function showSuccessModal() {
+                document.getElementById('successModal').classList.remove('hidden');
+            }
+
+            function hideSuccessModal() {
+                document.getElementById('successModal').classList.add('hidden');
+                // Reset form to step 1
+                showStep(1);
+                // TODO: Clear form data and reset selections
+            }
+
+            // Event listeners
+            clientViewBtn.addEventListener('click', showClientView);
+            adminViewBtn.addEventListener('click', showAdminView);
+
+            // Step navigation
+            document.getElementById('nextStep1').addEventListener('click', function() {
+                if (validateStep1()) {
+                    showStep(2);
+                }
+                // TODO: Show validation errors if invalid
+            });
+
+            document.getElementById('backStep1').addEventListener('click', () => showStep(1));
+
+            document.getElementById('nextStep2').addEventListener('click', function() {
+                if (selectedService) {
+                    showStep(3);
+                }
+            });
+
+            document.getElementById('backStep2').addEventListener('click', () => showStep(2));
+
+            document.getElementById('confirmBooking').addEventListener('click', function() {
+                // TODO: Submit booking data to backend
+                // For now, just show success modal
+                showSuccessModal();
+            });
+
+            document.getElementById('closeSuccessModal').addEventListener('click', hideSuccessModal);
+
+            // Initialize
+            handleServiceSelection();
+            handleCalendarSelection();
+            applyCPFMask();
+            showClientView();
+            updateStepIndicator(1);
+
+            // TODO: Implement real-time availability checking
+            // TODO: Add form validation feedback
+            // TODO: Integrate with backend API
+            // TODO: Add loading states
+            // TODO: Implement admin functionality (CRUD operations)
+            // TODO: Add notification system
+            // TODO: Implement search and filtering for admin panel
+            // TODO: Add export functionality for appointments
+            // TODO: Implement user authentication for admin area
+        })();
+    </script>
+</body>
+</html>
