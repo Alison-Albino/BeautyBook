@@ -1,35 +1,35 @@
-FROM node:18-alpine
-
-# Install curl and build tools
-RUN apk add --no-cache curl python3 make g++
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files first for better caching
+# Copy package files
 COPY package*.json ./
 
-# Install all dependencies
-RUN npm ci --verbose
+# Install dependencies
+RUN npm ci
 
-# Copy project files and directories
-COPY client/ ./client/
-COPY server/ ./server/
-COPY shared/ ./shared/
-COPY attached_assets/ ./attached_assets/
-COPY *.config.* ./
-COPY *.json ./
+# Copy source code
+COPY . .
 
-# Verify assets are copied
-RUN echo "=== Checking attached_assets ===" && ls -la attached_assets/ && echo "=== End assets check ==="
-
-# Set production environment
-ENV NODE_ENV=production
-
-# Build the application
+# Build application
 RUN npm run build
 
-# Clean up dev dependencies
-RUN npm prune --production
+# Production stage
+FROM node:18-alpine AS production
+
+WORKDIR /app
+
+# Install curl for healthcheck
+RUN apk add --no-cache curl
+
+# Copy package files
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
