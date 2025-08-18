@@ -25,6 +25,10 @@ This is a beauty salon appointment booking system called "Beatriz Sousa" built w
 - ✓ Fixed admin panel date filtering system for week, month, and year filters
 - ✓ Corrected appointment date comparison logic to work with YYYY-MM-DD string format
 - ✓ Fixed week filter to show current week (Monday to Sunday) instead of last 7 days
+- ✓ Application prepared for deployment outside Replit with Docker support
+- ✓ Created comprehensive deployment guides for VPS deployment
+- ✓ Added Dockerfile, docker-compose.yml, and automated deployment scripts
+- ✓ Configured for production with PostgreSQL container and security best practices
 
 # User Preferences
 
