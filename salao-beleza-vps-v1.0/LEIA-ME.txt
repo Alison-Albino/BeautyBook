@@ -1,0 +1,37 @@
+🚀 SISTEMA DE GESTÃO SALÃO DE BELEZA - PACOTE DEPLOY VPS
+================================================================
+
+📦 CONTEÚDO DO PACOTE:
+- Aplicação completa pré-compilada para produção
+- Scripts de instalação automática  
+- Configurações otimizadas para VPS
+- Documentação completa em português
+
+🔧 INSTALAÇÃO RÁPIDA:
+1. Extrair este pacote para /var/www/salao-beleza/
+2. Configurar .env com dados da sua base de dados
+3. Executar: ./start-production.sh
+
+📋 PRÉ-REQUISITOS:
+- Ubuntu 20.04+ ou CentOS 7+
+- Node.js 18+
+- PostgreSQL 12+
+
+📖 DOCUMENTAÇÃO COMPLETA:
+Consultar README-INSTALACAO.md para instruções detalhadas
+
+🔑 LOGIN INICIAL:
+Usuário: admin
+Senha: admin123
+
+🌐 FUNCIONALIDADES:
+✓ Gestão de serviços e preços
+✓ Registo e gestão de clientes  
+✓ Sistema de agendamentos
+✓ Painel administrativo completo
+✓ Interface responsiva (desktop/mobile)
+✓ Suporte para múltiplos países
+✓ Autenticação segura
+
+📞 SUPORTE:
+Consultar README-INSTALACAO.md para resolução de problemas
