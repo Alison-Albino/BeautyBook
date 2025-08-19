@@ -26,13 +26,21 @@ if ! command -v pm2 &> /dev/null; then
     npm install -g pm2
 fi
 
-# Inicializar base de dados
-echo "🗄️  Inicializando base de dados..."
-node init-db.js
+# Verificar se .env existe
+if [ ! -f .env ]; then
+    echo "❌ Arquivo .env não encontrado!"
+    echo "💡 Execute: cp .env.example .env && nano .env"
+    echo "   Configure DATABASE_URL e outras variáveis"
+    exit 1
+fi
 
-# Iniciar aplicação com PM2
+# Carregar variáveis de ambiente e inicializar base de dados
+echo "🗄️  Inicializando base de dados..."
+source .env && node init-db.js
+
+# Iniciar aplicação com PM2 (carregando .env)
 echo "🚀 Iniciando aplicação..."
-pm2 start dist/index.js --name "beatriz-sousa" --env production
+pm2 start dist/index.js --name "beatriz-sousa" --env production --env-file .env
 
 # Configurar PM2 para iniciar no boot
 pm2 save
