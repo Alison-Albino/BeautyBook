@@ -1,0 +1,16 @@
+# Configuração .env para o seu VPS
+# Copie este conteúdo para o arquivo .env no seu servidor
+
+# Base de Dados PostgreSQL (com os seus dados)
+DATABASE_URL="postgres://salao_beleza_app:123456@localhost:5432/salao_beleza"
+
+# Servidor
+NODE_ENV=production
+PORT=3000
+
+# Sessão (IMPORTANTE: Gere uma chave única para segurança)
+# Execute no servidor: openssl rand -base64 32
+SESSION_SECRET="mude-esta-chave-por-uma-segura-e-unica-123456789abcdef"
+
+# Logging
+DEBUG=false
