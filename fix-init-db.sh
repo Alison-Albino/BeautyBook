@@ -1,14 +1,20 @@
+#!/bin/bash
+
+echo "🔧 Corrigindo script init-db.js para carregar .env..."
+
+# Criar uma versão corrigida do init-db.js
+cat > init-db.js << 'EOF'
 // Script para inicializar a base de dados em produção
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import bcrypt from 'bcrypt';
 import { eq } from 'drizzle-orm';
-import { pgTable, serial, varchar, timestamp, text, integer, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-// Load environment variables from .env file
+// Carregar variáveis de ambiente do arquivo .env
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -22,7 +28,7 @@ try {
       const [key, ...valueParts] = trimmedLine.split('=');
       if (key && valueParts.length > 0) {
         let value = valueParts.join('=').trim();
-        // Remove quotes if present
+        // Remove aspas se presentes
         if ((value.startsWith('"') && value.endsWith('"')) || 
             (value.startsWith("'") && value.endsWith("'"))) {
           value = value.slice(1, -1);
@@ -32,12 +38,13 @@ try {
     }
   });
   
-  // Set environment variables
+  // Definir variáveis de ambiente
   Object.assign(process.env, envVars);
   console.log('✅ Arquivo .env carregado com sucesso');
+  console.log('🔗 DATABASE_URL configurado:', process.env.DATABASE_URL ? 'Sim' : 'Não');
 } catch (error) {
   console.error('❌ Erro ao ler arquivo .env:', error.message);
-  console.error('💡 Certifique-se de que o arquivo .env existe e está configurado corretamente');
+  console.error('💡 Certifique-se de que o arquivo .env existe na raiz do projeto');
   process.exit(1);
 }
 
@@ -90,7 +97,21 @@ async function initializeDatabase() {
   } catch (error) {
     console.error('❌ Erro na inicialização da base de dados:', error);
     process.exit(1);
+  } finally {
+    await pool.end();
   }
 }
 
 initializeDatabase();
+EOF
+
+echo "✅ Script init-db.js corrigido!"
+echo ""
+echo "🚀 Agora pode executar novamente:"
+echo "   ./start-production.sh"
+echo ""
+echo "ou testar diretamente:"
+echo "   node init-db.js"
+EOF
+
+chmod +x fix-init-db.sh
