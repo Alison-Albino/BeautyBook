@@ -1,6 +1,9 @@
-# 🌐 Porta Definida: 3000
+# 🌐 Configuração de Portas
 
 ## ✅ Configuração Padrão
+
+**Porta 3000**: Aplicação Node.js (frontend + backend)
+**Porta 5432**: PostgreSQL (base de dados)
 
 A aplicação está configurada para usar a **porta 3000** em todos os arquivos:
 
@@ -18,6 +21,10 @@ DATABASE_URL=postgresql://seu_usuario:sua_senha@localhost:5432/sua_base_dados
 SESSION_SECRET=uma-chave-muito-forte-de-pelo-menos-32-caracteres-aqui
 PORT=3000
 ```
+
+**Nota importante**:
+- `5432` na DATABASE_URL = porta do PostgreSQL (padrão)
+- `3000` na variável PORT = porta da aplicação Node.js
 
 ## 🌐 Acesso
 
