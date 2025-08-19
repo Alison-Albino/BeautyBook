@@ -1,8 +1,29 @@
 // Script para inicializar a base de dados em produção
-import { db } from './dist/db.js';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import bcrypt from 'bcrypt';
-import { admin } from './dist/shared/schema.js';
 import { eq } from 'drizzle-orm';
+import { pgTable, serial, varchar, timestamp, text, integer, boolean } from 'drizzle-orm/pg-core';
+
+// Schema inline (evita problemas de importação)
+const admin = pgTable('admin', {
+  id: serial('id').primaryKey(),
+  username: varchar('username', { length: 255 }).unique().notNull(),
+  password: varchar('password', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Conexão da base de dados
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL must be set. Did you forget to provision a database?");
+}
+
+const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: false
+});
+
+const db = drizzle(pool, { schema: { admin } });
 
 async function initializeDatabase() {
   try {

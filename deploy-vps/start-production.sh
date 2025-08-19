@@ -32,7 +32,7 @@ node init-db.js
 
 # Iniciar aplicação com PM2
 echo "🚀 Iniciando aplicação..."
-pm2 start server/index.js --name "beatriz-sousa" --env production
+pm2 start dist/index.js --name "beatriz-sousa" --env production
 
 # Configurar PM2 para iniciar no boot
 pm2 save
