@@ -1,4 +1,7 @@
 // Script para inicializar a base de dados em produção
+// Carregar variáveis de ambiente primeiro
+import './load-env.js';
+
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import bcrypt from 'bcrypt';
