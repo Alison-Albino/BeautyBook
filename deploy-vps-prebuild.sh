@@ -125,7 +125,7 @@ pm2 save
 pm2 startup
 
 echo "✅ Aplicação iniciada com sucesso!"
-echo "🌐 Acesso: http://localhost:$PORT (ou sua porta configurada)"
+echo "🌐 Acesso: http://localhost:3000"
 echo "🔑 Login admin: admin / admin123"
 EOF
 
