@@ -1,16 +1,30 @@
-import { Pool } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import * as schema from "@shared/schema";
+import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import * as schema from "@shared/simple-sqlite-schema";
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
+import { existsSync, mkdirSync } from 'fs';
+import { dirname } from 'path';
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
+// Configuração do banco SQLite
+const dbPath = process.env.NODE_ENV === 'production' ? './database.db' : './dev-database.db';
+
+// Criar diretório se não existir
+const dbDir = dirname(dbPath);
+if (!existsSync(dbDir) && dbDir !== '.') {
+  mkdirSync(dbDir, { recursive: true });
 }
 
-export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-  ssl: false
-});
+// Conexão SQLite
+const sqlite = new Database(dbPath);
+sqlite.pragma('journal_mode = WAL'); // Melhor performance
 
-export const db = drizzle(pool, { schema });
+export const db = drizzle(sqlite, { schema });
+
+// Auto-migrate no startup
+try {
+  console.log('🔄 Executando migrações do banco...');
+  migrate(db, { migrationsFolder: './sqlite-migrations' });
+  console.log('✅ Migrações concluídas!');
+} catch (error) {
+  console.log('ℹ️ Nenhuma migração necessária ou erro menor:', error);
+}
