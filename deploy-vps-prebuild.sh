@@ -14,7 +14,15 @@ cp start-production.sh deploy-vps/
 cp init-db.js deploy-vps/
 cp init.sql deploy-vps/
 
-# Criar .env de exemplo
+# Criar .env já configurado
+cat > deploy-vps/.env << 'EOF'
+NODE_ENV=production
+DATABASE_URL=postgresql://usuario_prod:G3min1-DB-Passw0rd-2024!@localhost:5432/app_prod
+SESSION_SECRET=e43a9b2f5c7d81a0b3f2c5d1e8a4b6c9d7e6f8a3c5d7e9f2a4b8c1d3e5a7b9c1
+PORT=3000
+EOF
+
+# Criar .env.example para backup
 cat > deploy-vps/.env.example << 'EOF'
 NODE_ENV=production
 DATABASE_URL=postgresql://username:password@localhost:5432/database_name
@@ -35,31 +43,17 @@ cat > deploy-vps/README-INSTALACAO.md << 'EOF'
 
 1. **Upload dos arquivos** para o servidor via FTP/SSH
 
-2. **Configurar variáveis de ambiente**:
-   ```bash
-   cp .env.example .env
-   nano .env
-   ```
-   
-   Configure:
-   ```env
-   NODE_ENV=production
-   DATABASE_URL=postgresql://seu_usuario:sua_senha@localhost:5432/sua_base_dados
-   SESSION_SECRET=uma-chave-muito-forte-de-pelo-menos-32-caracteres-aqui
-   PORT=3000
-   ```
-
-3. **Instalar apenas dependências de produção**:
+2. **Instalar apenas dependências de produção** (arquivo .env já configurado):
    ```bash
    npm install --omit=dev
    ```
 
-4. **Dar permissões de execução**:
+3. **Dar permissões de execução**:
    ```bash
    chmod +x start-production.sh
    ```
 
-5. **Executar aplicação**:
+4. **Executar aplicação**:
    ```bash
    ./start-production.sh
    ```
@@ -112,11 +106,10 @@ if ! command -v pm2 &> /dev/null; then
     npm install -g pm2
 fi
 
-# Verificar se .env existe
+# Verificar se .env existe (deve existir já configurado)
 if [ ! -f .env ]; then
     echo "❌ Arquivo .env não encontrado!"
-    echo "💡 Execute: cp .env.example .env && nano .env"
-    echo "   Configure DATABASE_URL e outras variáveis"
+    echo "💡 O .env deveria estar incluído no pacote"
     exit 1
 fi
 

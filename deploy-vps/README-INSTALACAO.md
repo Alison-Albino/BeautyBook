@@ -9,31 +9,17 @@
 
 1. **Upload dos arquivos** para o servidor via FTP/SSH
 
-2. **Configurar variáveis de ambiente**:
-   ```bash
-   cp .env.example .env
-   nano .env
-   ```
-   
-   Configure:
-   ```env
-   NODE_ENV=production
-   DATABASE_URL=postgresql://seu_usuario:sua_senha@localhost:5432/sua_base_dados
-   SESSION_SECRET=uma-chave-muito-forte-de-pelo-menos-32-caracteres-aqui
-   PORT=3000
-   ```
-
-3. **Instalar apenas dependências de produção**:
+2. **Instalar apenas dependências de produção** (arquivo .env já configurado):
    ```bash
    npm install --omit=dev
    ```
 
-4. **Dar permissões de execução**:
+3. **Dar permissões de execução**:
    ```bash
    chmod +x start-production.sh
    ```
 
-5. **Executar aplicação**:
+4. **Executar aplicação**:
    ```bash
    ./start-production.sh
    ```

@@ -26,11 +26,10 @@ if ! command -v pm2 &> /dev/null; then
     npm install -g pm2
 fi
 
-# Verificar se .env existe
+# Verificar se .env existe (deve existir já configurado)
 if [ ! -f .env ]; then
     echo "❌ Arquivo .env não encontrado!"
-    echo "💡 Execute: cp .env.example .env && nano .env"
-    echo "   Configure DATABASE_URL e outras variáveis"
+    echo "💡 O .env deveria estar incluído no pacote"
     exit 1
 fi
 
