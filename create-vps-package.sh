@@ -1,66 +1,101 @@
 #!/bin/bash
 
-echo "📦 Criando pacote completo para deploy em VPS..."
+echo "📦 Criando pacote completo para VPS..."
 
-# Nome do pacote
-PACKAGE_NAME="salao-beleza-vps-v1.0"
+# Criar diretório temporário
+mkdir -p salao-beleza-sqlite
 
-# Criar diretório temporário para o pacote
-rm -rf "$PACKAGE_NAME" 2>/dev/null
-mkdir -p "$PACKAGE_NAME"
+# Copiar arquivos essenciais
+cp -r client/ salao-beleza-sqlite/
+cp -r server/ salao-beleza-sqlite/
+cp -r shared/ salao-beleza-sqlite/
+cp -r sqlite-migrations/ salao-beleza-sqlite/
+cp package.json salao-beleza-sqlite/
+cp package-lock.json salao-beleza-sqlite/
+cp tsconfig.json salao-beleza-sqlite/
+cp vite.config.ts salao-beleza-sqlite/
+cp postcss.config.js salao-beleza-sqlite/
+cp tailwind.config.ts salao-beleza-sqlite/
+cp components.json salao-beleza-sqlite/
+cp drizzle.sqlite.config.ts salao-beleza-sqlite/
 
-# Copiar arquivos essenciais para produção
-echo "📋 Copiando arquivos necessários..."
+# Copiar logos (se existirem)
+mkdir -p salao-beleza-sqlite/attached_assets
+cp attached_assets/*.png salao-beleza-sqlite/attached_assets/ 2>/dev/null || true
 
-# Build da aplicação (frontend + backend compilado)
+# Criar scripts de instalação
+cat > salao-beleza-sqlite/install-vps.sh << 'EOF'
+#!/bin/bash
+
+echo "🚀 Instalação do Sistema de Salão - SQLite"
+
+# Instalar dependências Node.js
+npm ci
+
+# Aplicar migrações SQLite
+npx drizzle-kit push --config=drizzle.sqlite.config.ts
+
+# Inicializar base de dados
+node init-sqlite-db.js
+
+# Build da aplicação
 npm run build
 
-# Copiar estrutura básica
-cp -r deploy-vps/* "$PACKAGE_NAME/"
+echo "✅ Instalação concluída!"
+echo "🌐 Para iniciar: pm2 start start-sqlite.js --name salao-beleza"
+EOF
 
-# Copiar build da aplicação
-cp -r dist "$PACKAGE_NAME/"
+cat > salao-beleza-sqlite/start-sqlite.js << 'EOF'
+// Script de inicialização para produção com SQLite
+process.env.NODE_ENV = 'production';
+process.env.PORT = process.env.PORT || '3000';
 
-# Copiar assets e configurações
-cp package.json "$PACKAGE_NAME/"
-cp package-lock.json "$PACKAGE_NAME/" 2>/dev/null || true
-cp drizzle.config.ts "$PACKAGE_NAME/"
-cp tsconfig.json "$PACKAGE_NAME/"
+console.log('🚀 Iniciando aplicação com SQLite...');
+console.log('📍 Base de dados: ./database.db');
+console.log('🌐 Porta:', process.env.PORT);
 
-# Limpar dependências de desenvolvimento no package.json do pacote
-node -e "
-const fs = require('fs');
-const pkg = JSON.parse(fs.readFileSync('$PACKAGE_NAME/package.json', 'utf8'));
-delete pkg.devDependencies;
-pkg.scripts = {
-  'start': 'NODE_ENV=production node dist/index.js',
-  'db:push': 'drizzle-kit push'
+import('./dist/index.js').catch(console.error);
+EOF
+
+cat > salao-beleza-sqlite/ecosystem.sqlite.config.cjs << 'EOF'
+module.exports = {
+  apps: [{
+    name: 'salao-beleza-sqlite',
+    script: 'start-sqlite.js',
+    instances: 1,
+    exec_mode: 'fork',
+    env: {
+      NODE_ENV: 'production',
+      PORT: 3000
+    },
+    max_memory_restart: '1G',
+    autorestart: true,
+    watch: false
+  }]
 };
-fs.writeFileSync('$PACKAGE_NAME/package.json', JSON.stringify(pkg, null, 2));
-"
+EOF
 
-# Dar permissões de execução aos scripts
-chmod +x "$PACKAGE_NAME/start-production.sh"
+# Copiar script de inicialização da DB
+cp init-sqlite-db.js salao-beleza-sqlite/
 
-# Criar arquivo ZIP
-echo "🗜️  Criando arquivo ZIP..."
-zip -r "${PACKAGE_NAME}.zip" "$PACKAGE_NAME/" -x "*.git*" "*/node_modules/*"
+# Tornar scripts executáveis
+chmod +x salao-beleza-sqlite/install-vps.sh
+
+# Criar arquivo TAR
+tar -czf salao-beleza-sqlite.tar.gz salao-beleza-sqlite/
 
 # Limpar diretório temporário
-rm -rf "$PACKAGE_NAME"
+rm -rf salao-beleza-sqlite/
 
+echo "✅ Pacote criado: salao-beleza-sqlite.tar.gz"
 echo ""
-echo "✅ Pacote criado com sucesso: ${PACKAGE_NAME}.zip"
-echo ""
-echo "📁 Conteúdo do pacote:"
-echo "   - Aplicação compilada para produção"
-echo "   - Scripts de instalação automática"
-echo "   - Documentação completa"
-echo "   - Configurações otimizadas"
-echo ""
-echo "🚀 Próximos passos:"
-echo "   1. Descarregar o arquivo: ${PACKAGE_NAME}.zip"
-echo "   2. Upload para o seu VPS em /var/www/salao-beleza/"
-echo "   3. Extrair: unzip ${PACKAGE_NAME}.zip"
-echo "   4. Seguir README-INSTALACAO.md"
-echo ""
+echo "📋 INSTRUÇÕES PARA O VPS:"
+echo "1. scp salao-beleza-sqlite.tar.gz ubuntu@seu-servidor:~/"
+echo "2. ssh ubuntu@seu-servidor"
+echo "3. tar -xzf salao-beleza-sqlite.tar.gz"
+echo "4. cd salao-beleza-sqlite"
+echo "5. ./install-vps.sh"
+echo "6. pm2 start ecosystem.sqlite.config.cjs"
+EOF
+
+chmod +x create-vps-package.sh

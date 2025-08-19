@@ -22,17 +22,25 @@ This is a modern full-stack web application built with:
 
 ## Recent Changes
 - 2025-08-19: Successfully completed migration from Replit Agent to Replit environment
-- Installed all required Node.js dependencies 
-- Set up PostgreSQL database with proper schema
-- Created database tables using Drizzle ORM
+- **MAJOR UPDATE**: Migrated from PostgreSQL to SQLite for simplified deployment
+- Eliminated .env file dependency completely
+- Created SQLite schema with auto-incremental IDs
+- Applied SQLite migrations and initialized database
 - Created admin user: username 'admin', password 'admin123'
-- Application now running successfully on port 5000
-- Created complete VPS deployment package (salao-beleza-vps-v1.0.tar.gz)
-- Prepared production-ready configuration files and installation scripts
+- Added 6 example services to database
+- Application running successfully on port 5000 with SQLite
+- Created complete SQLite deployment package (salao-beleza-sqlite.tar.gz)
+- Prepared production-ready scripts for VPS deployment
+
+## Database Configuration
+- **Type**: SQLite (local file-based)
+- **Development DB**: ./dev-database.db
+- **Production DB**: ./database.db
+- **Migration System**: Drizzle ORM with SQLite adapter
 
 ## Admin Credentials
 - **Username**: admin
 - **Password**: admin123
 
 ## Migration Progress
-✓ Migration completed successfully - all checklist items completed
+✓ Migration completed successfully - SQLite implementation ready for production

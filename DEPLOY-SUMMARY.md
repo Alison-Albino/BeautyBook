@@ -1,80 +1,90 @@
-# 📦 Resumo do Pacote para Deploy VPS
+# 🎉 Deploy do Sistema de Salão de Beleza - CONCLUÍDO
 
-## ✅ Pacote Criado
-**Arquivo:** `salao-beleza-vps-v1.0.tar.gz` (740 KB)
+## ✅ Migração para SQLite Realizada com Sucesso
 
-## 📋 Conteúdo do Pacote
+O sistema foi **migrado com sucesso** do PostgreSQL para SQLite, eliminando completamente a dependência do arquivo `.env` e simplificando drasticamente o processo de deploy.
 
-### 🔧 Arquivos de Configuração
-- `package.json` - Dependências otimizadas para produção
-- `.env.example` - Template de configuração
-- `ecosystem.config.js` - Configuração PM2 para produção
-- `drizzle.config.ts` - Configuração da base de dados
+## 📦 O que Foi Implementado
 
-### 🚀 Scripts de Deploy
-- `start-production.sh` - Script automático de instalação
-- `init-db.js` - Inicialização da base de dados
-- `init.sql` - Schema SQL inicial
+### 1. **Base de Dados SQLite**
+- ✅ Schema adaptado com IDs auto-incrementais
+- ✅ 4 tabelas: users, services, clients, appointments
+- ✅ Utilizador admin criado: `admin` / `admin123`
+- ✅ 6 serviços de exemplo pré-carregados
+- ✅ Ficheiro da base de dados: `database.db`
 
-### 📖 Documentação
-- `README-INSTALACAO.md` - Guia completo de instalação
-- `LEIA-ME.txt` - Resumo rápido
+### 2. **Sistema Sem Dependências Externas**
+- ✅ Não requer PostgreSQL
+- ✅ Não requer arquivo `.env`
+- ✅ Funciona "out of the box"
+- ✅ Ideal para VPS pequenos
 
-### 💻 Aplicação Compilada
-- `dist/` - Backend compilado para produção
-- `client/` - Frontend com assets otimizados
+### 3. **Pacote de Deploy Criado**
+- ✅ `salao-beleza-sqlite.tar.gz` - pacote completo
+- ✅ Script de instalação automática
+- ✅ Configuração PM2 incluída
+- ✅ Todos os assets necessários
 
-## 🎯 Como Usar o Pacote
+## 🚀 Como Fazer Deploy no VPS
 
-### 1. Download
-Descarregar o arquivo `salao-beleza-vps-v1.0.tar.gz`
-
-### 2. Upload para VPS
+### Opção A: Usando o Pacote Criado
 ```bash
-# Criar diretório no servidor
-sudo mkdir -p /var/www/salao-beleza
+# 1. Enviar pacote para VPS
+scp salao-beleza-sqlite.tar.gz ubuntu@seu-servidor:~/
 
-# Upload do arquivo (via SCP/SFTP)
-scp salao-beleza-vps-v1.0.tar.gz user@servidor:/var/www/salao-beleza/
+# 2. Conectar ao VPS
+ssh ubuntu@seu-servidor
 
-# Extrair no servidor
-cd /var/www/salao-beleza
-tar -xzf salao-beleza-vps-v1.0.tar.gz
+# 3. Extrair e instalar
+tar -xzf salao-beleza-sqlite.tar.gz
+cd salao-beleza-sqlite
+./install-vps.sh
+
+# 4. Iniciar aplicação
+pm2 start ecosystem.sqlite.config.cjs
+
+# 5. Verificar status
+pm2 status
+pm2 logs salao-beleza-sqlite
 ```
 
-### 3. Configuração Rápida
+### Opção B: No Diretório Atual do VPS
 ```bash
-# Configurar ambiente
-cp .env.example .env
-nano .env  # Editar com dados da base de dados
-
-# Dar permissões
-chmod +x start-production.sh
-
-# Executar instalação automática
-./start-production.sh
+# No diretório /home/ubuntu/BeautyBook ou /home/ubuntu/Beatriz-f
+npm ci
+npx drizzle-kit push --config=drizzle.sqlite.config.ts
+node init-sqlite-db.js
+npm run build
+pm2 start start-sqlite.js --name salao-beleza
 ```
 
-## 🔑 Credenciais Padrão
-- **Usuário:** admin
-- **Senha:** admin123
+## 🌐 Acesso ao Sistema
 
-## 🌐 Funcionalidades Incluídas
-✅ Sistema completo de gestão do salão  
-✅ Interface responsiva (desktop/mobile)  
-✅ Gestão de serviços e preços  
-✅ Sistema de agendamentos  
-✅ Registo e gestão de clientes  
-✅ Painel administrativo completo  
-✅ Autenticação segura  
-✅ Suporte para múltiplos países  
-✅ Base de dados PostgreSQL  
-✅ Deploy otimizado com PM2  
+- **URL**: `http://seu-servidor-ip:3000`
+- **Login**: `admin`
+- **Senha**: `admin123`
 
-## 📞 Suporte Técnico
-Consultar `README-INSTALACAO.md` para:
-- Configuração detalhada
-- Resolução de problemas
-- Configuração de SSL/HTTPS
-- Configuração do Nginx
-- Comandos de manutenção
+## 🎯 Vantagens da Nova Implementação
+
+1. **Simplicidade**: Sem configuração de base de dados externa
+2. **Portabilidade**: Funciona em qualquer VPS
+3. **Performance**: SQLite é muito rápido para aplicações pequenas/médias
+4. **Backup Simples**: Basta copiar o ficheiro `database.db`
+5. **Zero Configuração**: Não requer variáveis de ambiente
+
+## 📊 Status Final
+
+- ✅ **Desenvolvimento**: Funcionando perfeitamente
+- ✅ **Produção**: Pronto para deploy
+- ✅ **Base de Dados**: SQLite operacional
+- ✅ **Autenticação**: Admin funcional
+- ✅ **Serviços**: 6 serviços de exemplo carregados
+
+## 🔄 Próximos Passos
+
+1. Fazer deploy usando uma das opções acima
+2. Testar o login no sistema
+3. Personalizar os serviços conforme necessário
+4. Configurar backups automáticos do `database.db`
+
+**O sistema está 100% pronto para produção!** 🎉
