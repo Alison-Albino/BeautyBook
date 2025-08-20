@@ -96,7 +96,7 @@ function Navigation() {
               size="sm"
             >
               <Settings className="w-4 h-4" />
-              <span className="text-sm">Painel Admin</span>
+
             </Button>
           </div>
         </div>
