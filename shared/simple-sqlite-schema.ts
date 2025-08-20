@@ -94,3 +94,17 @@ export type InsertAppointment = z.infer<typeof insertAppointmentSchema>;
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+
+// Login schema
+export const loginSchema = z.object({
+  username: z.string().min(3, "Nome de utilizador deve ter pelo menos 3 caracteres"),
+  password: z.string().min(6, "Palavra-passe deve ter pelo menos 6 caracteres"),
+});
+
+export type LoginRequest = z.infer<typeof loginSchema>;
+
+// Extended types for API responses
+export type AppointmentWithDetails = Appointment & {
+  client: Client;
+  service: Service;
+};

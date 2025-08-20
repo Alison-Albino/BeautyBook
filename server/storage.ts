@@ -1,4 +1,4 @@
-import { type Service, type InsertService, type Client, type InsertClient, type Appointment, type InsertAppointment, type AppointmentWithDetails, type Admin, type InsertAdmin, type LoginRequest, services, clients, appointments, admin } from "@shared/schema";
+import { type Service, type InsertService, type Client, type InsertClient, type Appointment, type InsertAppointment, type AppointmentWithDetails, type User, type InsertUser, type LoginRequest, services, clients, appointments, users } from "@shared/simple-sqlite-schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 import bcrypt from "bcrypt";
@@ -7,31 +7,32 @@ export interface IStorage {
   // Services
   getServices(): Promise<Service[]>;
   getAllServices(): Promise<Service[]>;
-  getService(id: string): Promise<Service | undefined>;
+  getService(id: number): Promise<Service | undefined>;
   createService(service: InsertService): Promise<Service>;
-  updateService(id: string, service: Partial<InsertService>): Promise<Service | undefined>;
-  deleteService(id: string): Promise<boolean>;
+  updateService(id: number, service: Partial<InsertService>): Promise<Service | undefined>;
+  deleteService(id: number): Promise<boolean>;
 
   // Clients
   getClients(): Promise<Client[]>;
-  getClient(id: string): Promise<Client | undefined>;
+  getClient(id: number): Promise<Client | undefined>;
   getClientByPhone(phone: string): Promise<Client | undefined>;
   createClient(client: InsertClient): Promise<Client>;
-  updateClient(id: string, client: Partial<InsertClient>): Promise<Client | undefined>;
+  updateClient(id: number, client: Partial<InsertClient>): Promise<Client | undefined>;
 
   // Appointments
   getAppointments(): Promise<AppointmentWithDetails[]>;
-  getAppointment(id: string): Promise<AppointmentWithDetails | undefined>;
+  getAppointment(id: number): Promise<AppointmentWithDetails | undefined>;
   getAppointmentsByDate(date: string): Promise<AppointmentWithDetails[]>;
-  getAvailableTimeSlots(date: string, serviceId: string): Promise<string[]>;
+  getAvailableTimeSlots(date: string, serviceId: number): Promise<string[]>;
   createAppointment(appointment: InsertAppointment): Promise<AppointmentWithDetails>;
-  updateAppointment(id: string, appointment: Partial<InsertAppointment>): Promise<AppointmentWithDetails | undefined>;
-  deleteAppointment(id: string): Promise<boolean>;
+  updateAppointment(id: number, appointment: Partial<InsertAppointment>): Promise<AppointmentWithDetails | undefined>;
+  deleteAppointment(id: number): Promise<boolean>;
 
-  // Admin
-  getAdmin(username: string): Promise<Admin | undefined>;
-  createAdmin(admin: InsertAdmin): Promise<Admin>;
-  verifyAdmin(credentials: LoginRequest): Promise<Admin | null>;
+  // Users (Admin)
+  getUser(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  verifyUser(credentials: LoginRequest): Promise<User | null>;
+  hasUsers(): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -41,12 +42,13 @@ export class DatabaseStorage implements IStorage {
 
   private async initializeDefaultAdmin() {
     try {
-      const existingAdmin = await this.getAdmin("admin");
-      if (!existingAdmin) {
+      const hasUsers = await this.hasUsers();
+      if (!hasUsers) {
         const hashedPassword = await bcrypt.hash("admin123", 10);
-        await this.createAdmin({
+        await this.createUser({
           username: "admin",
           password: hashedPassword,
+          role: "admin"
         });
         console.log("Default admin created - username: admin, password: admin123");
       }
@@ -91,7 +93,7 @@ export class DatabaseStorage implements IStorage {
     return this.servicesCache!.all;
   }
 
-  async getService(id: string): Promise<Service | undefined> {
+  async getService(id: number): Promise<Service | undefined> {
     const [service] = await db.select().from(services).where(eq(services.id, id));
     return service;
   }
@@ -103,14 +105,14 @@ export class DatabaseStorage implements IStorage {
     return service;
   }
 
-  async updateService(id: string, updateData: Partial<InsertService>): Promise<Service | undefined> {
+  async updateService(id: number, updateData: Partial<InsertService>): Promise<Service | undefined> {
     const [service] = await db.update(services).set(updateData).where(eq(services.id, id)).returning();
     // Clear cache when service is updated
     this.servicesCache = null;
     return service;
   }
 
-  async deleteService(id: string): Promise<boolean> {
+  async deleteService(id: number): Promise<boolean> {
     try {
       // Check if service has any appointments
       const serviceAppointments = await db.select().from(appointments).where(eq(appointments.serviceId, id));
@@ -122,7 +124,7 @@ export class DatabaseStorage implements IStorage {
       const result = await db.delete(services).where(eq(services.id, id));
       // Clear cache when service is deleted
       this.servicesCache = null;
-      return (result.rowCount ?? 0) > 0;
+      return result.changes > 0;
     } catch (error) {
       console.error("Error deleting service:", error);
       throw error;
@@ -135,7 +137,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getClient(id: string): Promise<Client | undefined> {
+  async getClient(id: number): Promise<Client | undefined> {
     const [client] = await db.select().from(clients).where(eq(clients.id, id));
     return client;
   }
@@ -150,7 +152,7 @@ export class DatabaseStorage implements IStorage {
     return client;
   }
 
-  async updateClient(id: string, updateData: Partial<InsertClient>): Promise<Client | undefined> {
+  async updateClient(id: number, updateData: Partial<InsertClient>): Promise<Client | undefined> {
     const [client] = await db.update(clients).set(updateData).where(eq(clients.id, id)).returning();
     return client;
   }
@@ -176,7 +178,7 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getAppointment(id: string): Promise<AppointmentWithDetails | undefined> {
+  async getAppointment(id: number): Promise<AppointmentWithDetails | undefined> {
     const [result] = await db
       .select({
         appointment: appointments,
@@ -216,7 +218,7 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getAvailableTimeSlots(date: string, serviceId: string): Promise<string[]> {
+  async getAvailableTimeSlots(date: string, serviceId: number): Promise<string[]> {
     const service = await this.getService(serviceId);
     if (!service) return [];
 
@@ -242,7 +244,7 @@ export class DatabaseStorage implements IStorage {
     return { ...appointment, client: client!, service: service! };
   }
 
-  async updateAppointment(id: string, updateData: Partial<InsertAppointment>): Promise<AppointmentWithDetails | undefined> {
+  async updateAppointment(id: number, updateData: Partial<InsertAppointment>): Promise<AppointmentWithDetails | undefined> {
     const [appointment] = await db.update(appointments).set(updateData).where(eq(appointments.id, id)).returning();
     if (!appointment) return undefined;
     
@@ -252,30 +254,35 @@ export class DatabaseStorage implements IStorage {
     return { ...appointment, client: client!, service: service! };
   }
 
-  async deleteAppointment(id: string): Promise<boolean> {
+  async deleteAppointment(id: number): Promise<boolean> {
     const result = await db.delete(appointments).where(eq(appointments.id, id));
-    return (result.rowCount ?? 0) > 0;
+    return result.changes > 0;
   }
 
-  // Admin
-  async getAdmin(username: string): Promise<Admin | undefined> {
-    const [adminUser] = await db.select().from(admin).where(eq(admin.username, username));
-    return adminUser;
+  // Users (Admin)
+  async getUser(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
-  async createAdmin(insertAdmin: InsertAdmin): Promise<Admin> {
-    const [adminUser] = await db.insert(admin).values(insertAdmin).returning();
-    return adminUser;
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
   }
 
-  async verifyAdmin(credentials: LoginRequest): Promise<Admin | null> {
-    const adminUser = await this.getAdmin(credentials.username);
-    if (!adminUser) return null;
+  async verifyUser(credentials: LoginRequest): Promise<User | null> {
+    const user = await this.getUser(credentials.username);
+    if (!user) return null;
 
-    const isValidPassword = await bcrypt.compare(credentials.password, adminUser.password);
+    const isValidPassword = await bcrypt.compare(credentials.password, user.password);
     if (!isValidPassword) return null;
 
-    return adminUser;
+    return user;
+  }
+
+  async hasUsers(): Promise<boolean> {
+    const result = await db.select({ count: users.id }).from(users).limit(1);
+    return result.length > 0;
   }
 }
 
